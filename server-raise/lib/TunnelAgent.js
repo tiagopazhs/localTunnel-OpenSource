@@ -25,7 +25,7 @@ class TunnelAgent extends Agent {
         // once a socket is available it is handed out to the next callback
         this.waitingCreateConn = [];
 
-        this.debug = Debug(`lt:TunnelAgent[${options.clientId}]`);
+        this.debug = Debug(`localtunnel:TunnelAgent[${options.clientId}]`);
 
         // track maximum allowed sockets
         this.connectedSockets = 0;
@@ -77,7 +77,7 @@ class TunnelAgent extends Agent {
 
     _onClose() {
         this.closed = true;
-        this.debug('closed tcp socket');
+        this.debug('closed tcp socket %s');
         // flush any waiting connections
         for (const conn of this.waitingCreateConn) {
             conn(new Error('closed'), null);

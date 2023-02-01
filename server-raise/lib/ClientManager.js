@@ -19,7 +19,7 @@ class ClientManager {
             tunnels: 0
         };
 
-        this.debug = Debug('lt:ClientManager');
+        this.debug = Debug('localtunnel:ClientManager');
 
         // This is totally wrong :facepalm: this needs to be per-client...
         this.graceTimeout = null;
@@ -74,7 +74,7 @@ class ClientManager {
     }
 
     removeClient(id) {
-        this.debug('removing client: %s', id);
+        this.debug('removing client: %o', id);
         const client = this.clients[id];
         if (!client) {
             return;
