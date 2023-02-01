@@ -18,6 +18,9 @@ export default function(opt) {
     const landingPage = opt.landing || 'https://localtunnel.github.io/www/';
 
     function GetClientIdFromHostname(hostname) {
+        //Use it if you are running server local: replace 3000 for your server port
+        // hostname = hostname.replace(':3000', '.com.br')
+
         return myTldjs.getSubdomain(hostname);
     }
 
