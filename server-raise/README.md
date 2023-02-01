@@ -68,3 +68,22 @@ docker run -d \
     --net host \
     defunctzombie/localtunnel-server:latest --port 3000
 ```
+
+**Rise comments:**
+
+*tests with server running local
+    example: localhost:3000
+    in this case add the bellow sentence in GetClientIdFromHostname function of ./server.js
+    hostname = hostname.replace(':3000', '.com.br')
+
+*host with already a subdomain
+    example: super.man.com.br
+    in this case change the condition if(!clientId) in server.on of ./server.js
+    replace by if(clientId == 'super')
+
+*Restriction of open ports on server
+    example: port 40051 on serverId: 192.328.165.78
+    localtunnel uses a port to rebound the connection
+    in this example case, add {port: 40051}, as a parameter in this.agent.createConnection function of ./lib/Client.js
+    and 40051, '192.328.165.78' in server.listen of TunnelAgent.js
+    
