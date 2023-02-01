@@ -95,6 +95,8 @@ class Client extends EventEmitter {
             console.error(err);
         });
 
+        //In restriction of open ports on server machine
+        //add this parameter after this.agent.createConnection( { portOpenNumber  ,
         this.agent.createConnection({}, (err, conn) => {
             this.debug('< [up] %s', req.url);
             // any errors getting a connection mean we cannot service this request
