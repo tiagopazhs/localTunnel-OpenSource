@@ -1,12 +1,12 @@
 #!/usr/bin/env node -r esm
 
-import 'localenv';
-import optimist from 'optimist';
+require('localenv')
+const optimist = require('optimist');
 
-import log from 'book';
-import Debug from 'debug';
+const log = require('book');
+const Debug = require('debug');
 
-import CreateServer from '../server.js';
+const CreateServer = require('../server.js');
 
 const debug = Debug('localtunnel');
 

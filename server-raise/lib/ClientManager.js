@@ -1,8 +1,8 @@
-import { hri } from 'human-readable-ids';
-import Debug from 'debug';
+const { hri } = require('human-readable-ids');
+const Debug = require('debug');
 
-import Client from './Client.js';
-import TunnelAgent from './TunnelAgent.js';
+const Client = require('./Client.js');
+const TunnelAgent = require('./TunnelAgent.js');
 
 // Manage sets of clients
 //
@@ -93,4 +93,4 @@ class ClientManager {
     }
 }
 
-export default ClientManager;
+module.exports = ClientManager;

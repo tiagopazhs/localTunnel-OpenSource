@@ -1,8 +1,8 @@
-import { Agent } from 'http';
-import net from 'net';
-import assert from 'assert';
-import log from 'book';
-import Debug from 'debug';
+const { Agent } = require('http');
+const net = require('net');
+const assert = require('assert');
+const log = require('book');
+const Debug = require('debug');
 
 const DEFAULT_MAX_SOCKETS = 10;
 
@@ -175,4 +175,4 @@ class TunnelAgent extends Agent {
     }
 }
 
-export default TunnelAgent;
+module.exports =  TunnelAgent;
