@@ -2,11 +2,7 @@
 
 const optimist = require('optimist');
 
-const Debug = require('debug');
-
 const CreateServer = require('../server.js');
-
-const debug = Debug('localtunnel');
 
 const argv = optimist
     .usage('Usage: $0 --port [num]')
@@ -43,7 +39,7 @@ const server = CreateServer({
 });
 
 server.listen(argv.port, argv.address, () => {
-    debug('server listening on port: %d', server.address().port);
+    console.log('server listening on port: %d', server.address().port);
 });
 
 process.on('SIGINT', () => {

@@ -1,7 +1,6 @@
 const { Agent } = require('http');
 const net = require('net');
 const assert = require('assert');
-const Debug = require('debug');
 
 const DEFAULT_MAX_SOCKETS = 10;
 
@@ -23,8 +22,6 @@ class TunnelAgent extends Agent {
         // when a createConnection cannot return a socket, it goes into a queue
         // once a socket is available it is handed out to the next callback
         this.waitingCreateConn = [];
-
-        this.debug = Debug(`localtunnel:TunnelAgent[${options.clientId}]`);
 
         // track maximum allowed sockets
         this.connectedSockets = 0;
@@ -67,7 +64,7 @@ class TunnelAgent extends Agent {
         return new Promise((resolve) => {
             server.listen(() => {
                 const port = server.address().port;
-                this.debug('tcp server listening on port: %d', port);
+                console.log('tcp server listening on port: %d', port);
 
                 resolve({
                     // port for lt client tcp connections
@@ -79,7 +76,7 @@ class TunnelAgent extends Agent {
 
     _onClose() {
         this.closed = true;
-        this.debug('closed tcp socket %s');
+        console.log('closed tcp socket %s');
         // flush any waiting connections
         for (const conn of this.waitingCreateConn) {
             conn(new Error('closed'), null);
@@ -92,13 +89,13 @@ class TunnelAgent extends Agent {
     _onConnection(socket) {
         // no more socket connections allowed
         if (this.connectedSockets >= this.maxTcpSockets) {
-            this.debug('no more sockets allowed');
+            console.log('no more sockets allowed');
             socket.destroy();
             return false;
         }
 
         socket.once('close', (hadError) => {
-            this.debug('closed socket (error: %s)', hadError);
+            console.log('closed socket (error: %s)', hadError);
             this.connectedSockets -= 1;
             // remove the socket from available list
             const idx = this.availableSockets.indexOf(socket);
@@ -106,9 +103,9 @@ class TunnelAgent extends Agent {
                 this.availableSockets.splice(idx, 1);
             }
 
-            this.debug('connected sockets: %s', this.connectedSockets);
+            console.log('connected sockets: %s', this.connectedSockets);
             if (this.connectedSockets <= 0) {
-                this.debug('all sockets disconnected');
+                console.log('all sockets disconnected');
                 this.emit('offline');
             }
         });
@@ -125,12 +122,12 @@ class TunnelAgent extends Agent {
         }
 
         this.connectedSockets += 1;
-        this.debug('new connection from: %s:%s', socket.address().address, socket.address().port);
+        console.log('new connection from: %s:%s', socket.address().address, socket.address().port);
 
         // if there are queued callbacks, give this socket now and don't queue into available
         const fn = this.waitingCreateConn.shift();
         if (fn) {
-            this.debug('giving socket to queued conn request');
+            console.log('giving socket to queued conn request');
             setTimeout(() => {
                 fn(null, socket);
             }, 0);
@@ -150,7 +147,7 @@ class TunnelAgent extends Agent {
             return;
         }
 
-        this.debug('create connection');
+        console.log('create connection');
 
         // socket is a tcp connection back to the user hosting the site
         const sock = this.availableSockets.shift();
@@ -159,12 +156,12 @@ class TunnelAgent extends Agent {
         // wait until we have one
         if (!sock) {
             this.waitingCreateConn.push(cb);
-            this.debug('waiting connected: %s', this.connectedSockets);
-            this.debug('waiting available: %s', this.availableSockets.length);
+            console.log('waiting connected: %s', this.connectedSockets);
+            console.log('waiting available: %s', this.availableSockets.length);
             return;
         }
 
-        this.debug('socket given');
+        console.log('socket given');
         cb(null, sock);
     }
 

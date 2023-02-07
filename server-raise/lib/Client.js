@@ -1,5 +1,4 @@
 const http = require('http');
-const Debug = require('debug');
 const pump = require('pump');
 const EventEmitter = require('events');
 
@@ -14,20 +13,18 @@ class Client extends EventEmitter {
         const agent = this.agent = options.agent;
         const id = this.id = options.id;
 
-        this.debug = Debug(`localtunnel:Client[${this.id}]`);
-
         // client is given a grace period in which they can connect before they are _removed_
         this.graceTimeout = setTimeout(() => {
             this.close();
         }, 1000).unref();
 
         agent.on('online', () => {
-            this.debug('client online %s', id);
+            console.log('client online %s', id);
             clearTimeout(this.graceTimeout);
         });
 
         agent.on('offline', () => {
-            this.debug('client offline %s', id);
+            console.log('client offline %s', id);
 
             // if there was a previous timeout set, we don't want to double trigger
             clearTimeout(this.graceTimeout);
@@ -56,7 +53,6 @@ class Client extends EventEmitter {
     }
 
     handleRequest(req, res) {
-        this.debug('> %s', req.url);
         const opt = {
             path: req.url,
             agent: this.agent,
@@ -65,7 +61,6 @@ class Client extends EventEmitter {
         };
 
         const clientReq = http.request(opt, (clientRes) => {
-            this.debug('< %s', req.url);
             // write response code and headers
             res.writeHead(clientRes.statusCode, clientRes.headers);
 
@@ -85,7 +80,6 @@ class Client extends EventEmitter {
     }
 
     handleUpgrade(req, socket) {
-        this.debug('> [up] %s', req.url);
         socket.once('error', (err) => {
             // These client side errors can happen if the client dies while we are reading
             // We don't need to surface these in our logs.
@@ -98,7 +92,6 @@ class Client extends EventEmitter {
         //In restriction of open ports on server machine
         //add this parameter after this.agent.createConnection( { portOpenNumber  ,
         this.agent.createConnection({}, (err, conn) => {
-            this.debug('< [up] %s', req.url);
             // any errors getting a connection mean we cannot service this request
             if (err) {
                 socket.end();

@@ -1,13 +1,10 @@
 const Koa = require('koa');
 const tldjs = require('tldjs');
-const Debug = require('debug');
 const http = require('http');
 const { hri } = require('human-readable-ids');
 const Router = require('koa-router');
 
 const ClientManager = require('./lib/ClientManager.js');
-
-const debug = Debug('localtunnel:server');
 
 module.exports = function(opt) {
     opt = opt || {};
@@ -68,7 +65,7 @@ module.exports = function(opt) {
         const isNewClientRequest = ctx.query['new'] !== undefined;
         if (isNewClientRequest) {
             const reqId = hri.random();
-            debug('making new client with id %s', reqId);
+            console.log('making new client with id %s', reqId);
             const info = await manager.newClient(reqId);
 
             const url = schema + '://' + info.id + '.' + ctx.request.host;
@@ -106,7 +103,7 @@ module.exports = function(opt) {
             return;
         }
 
-        debug('making new client with id %s', reqId);
+        console.log('making new client with id %s', reqId);
         const info = await manager.newClient(reqId);
 
         const url = schema + '://' + info.id + '.' + ctx.request.host;
