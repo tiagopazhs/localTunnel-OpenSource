@@ -2,7 +2,6 @@
 
 const optimist = require('optimist');
 
-const log = require('book');
 const Debug = require('debug');
 
 const CreateServer = require('../server.js');
@@ -56,11 +55,11 @@ process.on('SIGTERM', () => {
 });
 
 process.on('uncaughtException', (err) => {
-    log.error(err);
+    console.error(err);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-    log.error(reason);
+    console.error(reason);
 });
 
 // vim: ft=javascript

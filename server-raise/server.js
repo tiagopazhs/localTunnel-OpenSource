@@ -1,4 +1,3 @@
-const log = require('book');
 const Koa = require('koa');
 const tldjs = require('tldjs');
 const Debug = require('debug');
@@ -19,7 +18,7 @@ module.exports = function(opt) {
 
     function GetClientIdFromHostname(hostname) {
         //Use it if you are running server local: replace 3000 for your server port
-        // hostname = hostname.replace(':3000', '.com.br')
+        hostname = hostname.replace(':3006', '.com.br')
 
         return myTldjs.getSubdomain(hostname);
     }

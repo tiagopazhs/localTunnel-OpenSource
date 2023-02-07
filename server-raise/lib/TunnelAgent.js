@@ -1,7 +1,6 @@
 const { Agent } = require('http');
 const net = require('net');
 const assert = require('assert');
-const log = require('book');
 const Debug = require('debug');
 
 const DEFAULT_MAX_SOCKETS = 10;
@@ -59,7 +58,7 @@ class TunnelAgent extends Agent {
             if (err.code == 'ECONNRESET' || err.code == 'ETIMEDOUT') {
                 return;
             }
-            log.error(err);
+            console.error(err);
         });
 
 
