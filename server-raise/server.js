@@ -132,8 +132,8 @@ export default function(opt) {
         const clientId = GetClientIdFromHostname(hostname);
 
         //This callback is used to indentify if the request already has an alias
-        //Replace for if(clientId == 'subdomain') if you already has a subdomain
-        //example: super.man.com.br, use: if(clientId == 'super')
+        //Remove the subsomain if you already has it
+        //example: super.man.com.br, use: hostname = hostname.replace('super.', '')
         if (!clientId) {
             appCallback(req, res);
             return;

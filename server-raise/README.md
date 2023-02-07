@@ -78,8 +78,8 @@ docker run -d \
 
 *host with already a subdomain
     example: super.man.com.br
-    in this case change the condition if(!clientId) in server.on of ./server.js
-    replace by if(clientId == 'super')
+    in this case remove the subsomain like:
+    hostname = hostname.replace('super.', '')
 
 *Restriction of open ports on server
     example: port 40051 on serverId: 192.328.165.78
