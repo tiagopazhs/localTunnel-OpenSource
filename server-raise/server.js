@@ -14,7 +14,6 @@ module.exports = function(opt) {
     const landingPage = opt.landing || 'https://localtunnel.github.io/www/';
 
     function GetClientIdFromHostname(hostname) {
-        //Use it if you are running server local: replace 3000 for your server port
         hostname = hostname.replace(':3006', '.com.br')
 
         return myTldjs.getSubdomain(hostname);
@@ -52,11 +51,9 @@ module.exports = function(opt) {
     app.use(router.routes());
     app.use(router.allowedMethods());
 
-    // root endpoint
     app.use(async (ctx, next) => {
         const path = ctx.request.path;
 
-        // skip anything not on the root path
         if (path !== '/') {
             await next();
             return;
@@ -74,18 +71,12 @@ module.exports = function(opt) {
             return;
         }
 
-        // no new client request, send to landing page
         ctx.redirect(landingPage);
     });
 
-    // anything after the / path is a request for a specific client name
-    // This is a backwards compat feature
     app.use(async (ctx, next) => {
         const parts = ctx.request.path.split('/');
 
-        // any request with several layers of paths is not allowed
-        // rejects /foo/bar
-        // allow /foo
         if (parts.length !== 2) {
             await next();
             return;
@@ -93,7 +84,6 @@ module.exports = function(opt) {
 
         const reqId = parts[1];
 
-        // limit requested hostnames to 63 characters
         if (! /^(?:[a-z0-9][a-z0-9\-]{4,63}[a-z0-9]|[a-z0-9]{4,63})$/.test(reqId)) {
             const msg = 'Invalid subdomain. Subdomains must be lowercase and between 4 and 63 alphanumeric characters.';
             ctx.status = 403;
@@ -117,7 +107,6 @@ module.exports = function(opt) {
     const appCallback = app.callback();
 
     server.on('request', (req, res) => {
-        // without a hostname, we won't know who the request is for
         const hostname = req.headers.host;
         if (!hostname) {
             res.statusCode = 400;
@@ -127,9 +116,6 @@ module.exports = function(opt) {
 
         const clientId = GetClientIdFromHostname(hostname);
 
-        //This callback is used to indentify if the request already has an alias
-        //Remove the subsomain if you already has it
-        //example: super.man.com.br, use: hostname = hostname.replace('super.', '')
         if (!clientId) {
             appCallback(req, res);
             return;
