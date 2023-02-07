@@ -85,5 +85,7 @@ docker run -d \
     example: port 40051 on serverId: 192.328.165.78
     localtunnel uses a port to rebound the connection
     in this example case, add {port: 40051}, as a parameter in this.agent.createConnection function of ./lib/Client.js
+    result: this.agent.createConnection({port: 40051}, (err, conn) => {
     and 40051, '192.328.165.78' in server.listen of TunnelAgent.js
+    result: server.listen(40051, '192.328.165.78', () => {
     
