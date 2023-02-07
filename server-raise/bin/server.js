@@ -1,6 +1,5 @@
 #!/usr/bin/env node -r esm
 
-require('localenv')
 const optimist = require('optimist');
 
 const log = require('book');
