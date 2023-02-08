@@ -30,7 +30,7 @@ class ClientManager {
             maxSockets: 10,
         });
 
-        const client = new Client({
+        const client = Client({
             id,
             agent,
         });

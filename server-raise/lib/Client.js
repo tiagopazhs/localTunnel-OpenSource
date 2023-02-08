@@ -2,68 +2,64 @@ const http = require('http');
 const pump = require('pump');
 const EventEmitter = require('events');
 
-class Client extends EventEmitter {
-    constructor(options) {
-        super();
+const Client = (options) => {
+    const client = new EventEmitter();
 
-        const agent = this.agent = options.agent;
-        const id = this.id = options.id;
+    const agent = options.agent;
+    const id = options.id;
 
-        this.graceTimeout = setTimeout(() => {
-            this.close();
+    client.graceTimeout = setTimeout(() => {
+        client.close();
+    }, 1000).unref();
+
+    agent.on('online', () => {
+        console.log('client online %s', id);
+        clearTimeout(client.graceTimeout);
+    });
+
+    agent.on('offline', () => {
+        console.log('client offline %s', id);
+
+        clearTimeout(client.graceTimeout);
+
+        client.graceTimeout = setTimeout(() => {
+            client.close();
         }, 1000).unref();
+    });
 
-        agent.on('online', () => {
-            console.log('client online %s', id);
-            clearTimeout(this.graceTimeout);
-        });
+    agent.once('error', (err) => {
+        client.close();
+    });
 
-        agent.on('offline', () => {
-            console.log('client offline %s', id);
+    client.stats = () => {
+        return agent.stats();
+    };
 
-            clearTimeout(this.graceTimeout);
+    client.close = () => {
+        clearTimeout(client.graceTimeout);
+        agent.destroy();
+        client.emit('close');
+    };
 
-            this.graceTimeout = setTimeout(() => {
-                this.close();
-            }, 1000).unref();
-        });
-
-        agent.once('error', (err) => {
-            this.close();
-        });
-    }
-
-    stats() {
-        return this.agent.stats();
-    }
-
-    close() {
-        clearTimeout(this.graceTimeout);
-        this.agent.destroy();
-        this.emit('close');
-    }
-
-    handleRequest(req, res) {
+    client.handleRequest = (req, res) => {
         const opt = {
             path: req.url,
-            agent: this.agent,
+            agent: agent,
             method: req.method,
             headers: req.headers
         };
-
         const clientReq = http.request(opt, (clientRes) => {
             res.writeHead(clientRes.statusCode, clientRes.headers);
 
             pump(clientRes, res);
         });
 
-        clientReq.once('error', (err) => {
-        });
+        clientReq.once('error', (err) => { });
 
         pump(req, clientReq);
-    }
+    };
 
-    handleUpgrade(req, socket) {
+    client.handleUpgrade = (req, socket) => {
         socket.once('error', (err) => {
             if (err.code == 'ECONNRESET' || err.code == 'ETIMEDOUT') {
                 return;
@@ -71,7 +67,7 @@ class Client extends EventEmitter {
             console.error(err);
         });
 
-        this.agent.createConnection({}, (err, conn) => {
+        agent.createConnection({}, (err, conn) => {
             if (err) {
                 socket.end();
                 return;
@@ -84,8 +80,8 @@ class Client extends EventEmitter {
             }
 
             const arr = [`${req.method} ${req.url} HTTP/${req.httpVersion}`];
-            for (let i=0 ; i < (req.rawHeaders.length-1) ; i+=2) {
-                arr.push(`${req.rawHeaders[i]}: ${req.rawHeaders[i+1]}`);
+            for (let i = 0; i < req.rawHeaders.length - 1; i += 2) {
+                arr.push(`${req.rawHeaders[i]}: ${req.rawHeaders[i + 1]}`);
             }
 
             arr.push('');
@@ -95,7 +91,9 @@ class Client extends EventEmitter {
             pump(socket, conn);
             conn.write(arr.join('\r\n'));
         });
-    }
-}
+    };
+
+    return client;
+};
 
 module.exports = Client;
