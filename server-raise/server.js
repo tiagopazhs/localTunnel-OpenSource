@@ -1,8 +1,8 @@
-const Koa = require('koa');
+const express = require('express');
 const tldjs = require('tldjs');
 const http = require('http');
 const { hri } = require('human-readable-ids');
-const Router = require('koa-router');
+const router = express.Router();
 
 const ClientManager = require('./lib/ClientManager.js');
 
@@ -23,40 +23,34 @@ module.exports = function(opt) {
 
     const schema = opt.secure ? 'https' : 'http';
 
-    const app = new Koa();
-    const router = new Router();
+    const app = express();
 
-    app.use(router.routes());
-    app.use(router.allowedMethods());
+    app.use(router);
 
-    app.use(async (ctx, next) => {
-        const path = ctx.request.path;
+    router.get('/', async (req, res) => {
+        const path = req.path;
 
         if (path !== '/') {
-            await next();
+            next();
             return;
         }
 
-        const isNewClientRequest = ctx.query['new'] !== undefined;
+        const isNewClientRequest = req.query['new'] !== undefined;
         if (isNewClientRequest) {
             const reqId = hri.random();
             console.log('making new client with id %s', reqId);
             const info = await manager.newClient(reqId);
 
-            const url = schema + '://' + info.id + '.' + ctx.request.host;
+            const url = schema + '://' + info.id + '.' + req.hostname;
             info.url = url;
-            ctx.body = info;
+            res.json(info);
             return;
         }
 
-        ctx.redirect(landingPage);
+        res.redirect(landingPage);
     });
 
-    const server = http.createServer();
-
-    const appCallback = app.callback();
-
-    server.on('request', (req, res) => {
+    const server = http.createServer((req, res) => {
         const hostname = req.headers.host;
         if (!hostname) {
             res.statusCode = 400;
@@ -67,7 +61,7 @@ module.exports = function(opt) {
         const clientId = GetClientIdFromHostname(hostname);
 
         if (!clientId) {
-            appCallback(req, res);
+            app(req, res);
             return;
         }
 
