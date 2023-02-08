@@ -26,28 +26,6 @@ module.exports = function(opt) {
     const app = new Koa();
     const router = new Router();
 
-    router.get('/api/status', async (ctx, next) => {
-        const stats = manager.stats;
-        ctx.body = {
-            tunnels: stats.tunnels,
-            mem: process.memoryUsage(),
-        };
-    });
-
-    router.get('/api/tunnels/:id/status', async (ctx, next) => {
-        const clientId = ctx.params.id;
-        const client = manager.getClient(clientId);
-        if (!client) {
-            ctx.throw(404);
-            return;
-        }
-
-        const stats = client.stats();
-        ctx.body = {
-            connected_sockets: stats.connectedSockets,
-        };
-    });
-
     app.use(router.routes());
     app.use(router.allowedMethods());
 
@@ -72,34 +50,6 @@ module.exports = function(opt) {
         }
 
         ctx.redirect(landingPage);
-    });
-
-    app.use(async (ctx, next) => {
-        const parts = ctx.request.path.split('/');
-
-        if (parts.length !== 2) {
-            await next();
-            return;
-        }
-
-        const reqId = parts[1];
-
-        if (! /^(?:[a-z0-9][a-z0-9\-]{4,63}[a-z0-9]|[a-z0-9]{4,63})$/.test(reqId)) {
-            const msg = 'Invalid subdomain. Subdomains must be lowercase and between 4 and 63 alphanumeric characters.';
-            ctx.status = 403;
-            ctx.body = {
-                message: msg,
-            };
-            return;
-        }
-
-        console.log('making new client with id %s', reqId);
-        const info = await manager.newClient(reqId);
-
-        const url = schema + '://' + info.id + '.' + ctx.request.host;
-        info.url = url;
-        ctx.body = info;
-        return;
     });
 
     const server = http.createServer();
@@ -129,28 +79,6 @@ module.exports = function(opt) {
         }
 
         client.handleRequest(req, res);
-    });
-
-    server.on('upgrade', (req, socket, head) => {
-        const hostname = req.headers.host;
-        if (!hostname) {
-            socket.destroy();
-            return;
-        }
-
-        const clientId = GetClientIdFromHostname(hostname);
-        if (!clientId) {
-            socket.destroy();
-            return;
-        }
-
-        const client = manager.getClient(clientId);
-        if (!client) {
-            socket.destroy();
-            return;
-        }
-
-        client.handleUpgrade(req, socket);
     });
 
     return server;
