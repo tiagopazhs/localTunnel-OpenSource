@@ -2,78 +2,94 @@ const express = require('express');
 const tldjs = require('tldjs');
 const http = require('http');
 const { hri } = require('human-readable-ids');
+const ClientManager = require('./src/lib/ClientManager.js');
+
+const argv = {
+    port: 3006,
+    address: '0.0.0.0',
+    secure: false,
+    domain: undefined,
+    'max-sockets': 10,
+};
+
+const app = express();
 const router = express.Router();
+app.use(router);
 
-const ClientManager = require('./lib/ClientManager.js');
+const opt = {};
+const validHosts = (argv.domain) ? [argv.domain] : undefined;
+const myTldjs = tldjs.fromUserSettings({ validHosts });
+const landingPage = opt.landing || 'https://localtunnel.github.io/www/';
+const schema = argv.secure ? 'https' : 'http';
+const manager = new ClientManager({ max_tcp_sockets: argv['max-sockets'] });
 
-module.exports = function(opt) {
-    opt = opt || {};
+function GetClientIdFromHostname(hostname) {
+    hostname = hostname.replace(':3006', '.com.br')
+    return myTldjs.getSubdomain(hostname);
+}
 
-    const validHosts = (opt.domain) ? [opt.domain] : undefined;
-    const myTldjs = tldjs.fromUserSettings({ validHosts });
-    const landingPage = opt.landing || 'https://localtunnel.github.io/www/';
-
-    function GetClientIdFromHostname(hostname) {
-        hostname = hostname.replace(':3006', '.com.br')
-
-        return myTldjs.getSubdomain(hostname);
+router.get('/', async (req, res) => {
+    if (req.path !== '/') {
+        next();
+        return;
     }
 
-    const manager = new ClientManager(opt);
+    if (req.query['new'] !== undefined) {
+        const reqId = hri.random();
+        console.log('making new client with id %s', reqId);
+        const info = await manager.newClient(reqId);
 
-    const schema = opt.secure ? 'https' : 'http';
+        const url = schema + '://' + info.id + '.' + req.hostname;
+        info.url = url;
+        res.json(info);
+        return;
+    }
 
-    const app = express();
+    res.redirect(landingPage);
+});
 
-    app.use(router);
+const server = http.createServer((req, res) => {
+    const hostname = req.headers.host;
+    if (!hostname) {
+        res.statusCode = 400;
+        res.end('Host header is required');
+        return;
+    }
 
-    router.get('/', async (req, res) => {
-        const path = req.path;
+    const clientId = GetClientIdFromHostname(hostname);
+    if (!clientId) {
+        app(req, res);
+        return;
+    }
 
-        if (path !== '/') {
-            next();
-            return;
-        }
+    const client = manager.getClient(clientId);
+    if (!client) {
+        res.statusCode = 404;
+        res.end('404');
+        return;
+    }
 
-        const isNewClientRequest = req.query['new'] !== undefined;
-        if (isNewClientRequest) {
-            const reqId = hri.random();
-            console.log('making new client with id %s', reqId);
-            const info = await manager.newClient(reqId);
+    client.handleRequest(req, res);
+});
 
-            const url = schema + '://' + info.id + '.' + req.hostname;
-            info.url = url;
-            res.json(info);
-            return;
-        }
+server.listen(argv.port, argv.address, () => {
+    console.log('server listening on port: %d', server.address().port);
+});
 
-        res.redirect(landingPage);
-    });
+process.on('SIGINT', () => {
+    process.exit();
+});
 
-    const server = http.createServer((req, res) => {
-        const hostname = req.headers.host;
-        if (!hostname) {
-            res.statusCode = 400;
-            res.end('Host header is required');
-            return;
-        }
+process.on('SIGTERM', () => {
+    process.exit();
+});
 
-        const clientId = GetClientIdFromHostname(hostname);
+process.on('uncaughtException', (err) => {
+    console.error(err);
+});
 
-        if (!clientId) {
-            app(req, res);
-            return;
-        }
+process.on('unhandledRejection', (reason, promise) => {
+    console.error(reason);
+});
 
-        const client = manager.getClient(clientId);
-        if (!client) {
-            res.statusCode = 404;
-            res.end('404');
-            return;
-        }
-
-        client.handleRequest(req, res);
-    });
-
-    return server;
-};
+module.exports = server;
