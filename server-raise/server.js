@@ -17,15 +17,13 @@ const router = express.Router();
 app.use(router);
 
 const opt = {};
-const validHosts = (argv.domain) ? [argv.domain] : undefined;
-const myTldjs = tldjs.fromUserSettings({ validHosts });
 const landingPage = opt.landing || 'https://localtunnel.github.io/www/';
 const schema = argv.secure ? 'https' : 'http';
 const manager = new ClientManager({ max_tcp_sockets: argv['max-sockets'] });
 
 function GetClientIdFromHostname(hostname) {
     hostname = hostname.replace(':3006', '.com.br')
-    return myTldjs.getSubdomain(hostname);
+    return tldjs.getSubdomain(hostname);
 }
 
 router.get('/', async (req, res) => {
