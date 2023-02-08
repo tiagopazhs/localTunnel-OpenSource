@@ -1,8 +1,8 @@
 const express = require('express');
-const tldjs = require('tldjs');
 const http = require('http');
 const { hri } = require('human-readable-ids');
-const ClientManager = require('./src/lib/ClientManager.js');
+const ClientManager = require('./src/lib/ClientManager');
+const { GetClientIdFromHostname } = require('./src/utils/index')
 
 const argv = {
     port: 3006,
@@ -20,11 +20,6 @@ const opt = {};
 const landingPage = opt.landing || 'https://localtunnel.github.io/www/';
 const schema = argv.secure ? 'https' : 'http';
 const manager = new ClientManager({ max_tcp_sockets: argv['max-sockets'] });
-
-function GetClientIdFromHostname(hostname) {
-    hostname = hostname.replace(':3006', '.com.br')
-    return tldjs.getSubdomain(hostname);
-}
 
 router.get('/', async (req, res) => {
     if (req.path !== '/') {
