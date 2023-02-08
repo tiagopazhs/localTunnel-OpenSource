@@ -13,7 +13,6 @@
     "human-readable-ids": "1.0.3",
     "koa": "2.5.1",
     "koa-router": "7.4.0",
-    "optimist": "0.6.1",
     "pump": "3.0.0",
     "tldjs": "2.3.1"
   },
