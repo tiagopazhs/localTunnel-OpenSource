@@ -3,14 +3,7 @@ const http = require('http');
 const { hri } = require('human-readable-ids');
 const ClientManager = require('./src/lib/ClientManager');
 const { GetClientIdFromHostname } = require('./src/utils/index')
-
-const argv = {
-    port: 3006,
-    address: '0.0.0.0',
-    secure: false,
-    domain: undefined,
-    'max-sockets': 10,
-};
+const { argv } = require('./src/constants/config')
 
 const app = express();
 const router = express.Router();
