@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { manager } = require('../constants/config')
+const { parameters, manager, landingPage } = require('../constants/config')
 const { hri } = require('human-readable-ids');
 
 router.get('/', async (req, res) => {
@@ -8,10 +8,10 @@ router.get('/', async (req, res) => {
         console.log('making new client with id %s', reqId);
         const info = await manager.newClient(reqId);
 
-        info.url = 'http://' + info.id + '.' + req.hostname + ':3006';
+        info.url = 'http://' + info.id + '.' + req.hostname + parameters.port;
         res.json(info);
     } else {
-        res.json({ msg: 'Localtunnel server is running!!! Use a Client Application to send a requisition with query[new] and create a new tunnel.' })
+        res.json({ msg: parameters.landingPage })
     }
 });
 
