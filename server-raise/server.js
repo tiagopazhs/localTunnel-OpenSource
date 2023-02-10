@@ -9,10 +9,7 @@ const app = express();
 const router = express.Router();
 app.use(router);
 
-const opt = {};
-const landingPage = opt.landing || 'https://localtunnel.github.io/www/';
-const schema = argv.secure ? 'https' : 'http';
-const manager = new ClientManager({ max_tcp_sockets: argv['max-sockets'] });
+const manager = new ClientManager({ max_tcp_sockets: argv.maxsockets });
 
 router.get('/', async (req, res) => {
     if (req.path !== '/') {
@@ -25,7 +22,7 @@ router.get('/', async (req, res) => {
         console.log('making new client with id %s', reqId);
         const info = await manager.newClient(reqId);
 
-        const url = schema + '://' + info.id + '.' + req.hostname;
+        const url = 'http://' + info.id + '.' + req.hostname;
         info.url = url;
         res.json(info);
         return;
