@@ -1,3 +1,5 @@
+const ClientManager = require('../lib/ClientManager');
+
 const argv = {
     port: 3006,
     address: '0.0.0.0',
@@ -6,4 +8,6 @@ const argv = {
     maxsockets: 10,
 };
 
-module.exports = { argv };
+const manager = ClientManager();
+
+module.exports = { argv, manager };

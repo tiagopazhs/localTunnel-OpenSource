@@ -17,6 +17,7 @@ function ClientManager() {
     const agent = new TunnelAgent({ clientId: id, maxSockets });
     const client = Client({ id, agent });
     clients[id] = client;
+    
 
     client.once('close', () => {
       removeClient(id);
@@ -41,15 +42,11 @@ function ClientManager() {
     client.close();
   }
 
-  function hasClient(id) {
-    return !!clients[id];
-  }
-
   function getClient(id) {
     return clients[id];
   }
 
-  return { newClient, removeClient, hasClient, getClient };
+  return { newClient, removeClient, getClient };
 }
 
 module.exports = ClientManager;
