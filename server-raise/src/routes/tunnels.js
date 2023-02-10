@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
         console.log('making new client with id %s', reqId);
         const info = await manager.newClient(reqId);
 
-        info.url = 'http://' + info.id + '.' + req.hostname + parameters.port;
+        info.url = 'http://' + info.id + '.' + req.hostname+ ':'+ parameters.port;
         res.json(info);
     } else {
         res.json({ msg: parameters.landingPage })

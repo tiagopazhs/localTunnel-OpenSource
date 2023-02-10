@@ -3,15 +3,14 @@ const app = express();
 const http = require('http');
 const { GetClientIdFromHostname } = require('./src/utils/index')
 const tunnels = require('./src/routes/tunnels')
+const controlPanel = require('./src/routes/controlPanel')
 const { parameters, manager } = require('./src/constants/config')
 
 app.use('/', tunnels)
+app.use('/control-panel', controlPanel)
 
 const server = http.createServer((req, res) => {
-    
-    const hostname = req.headers.host;
-
-    const clientId = GetClientIdFromHostname(hostname);
+    const clientId = GetClientIdFromHostname(req.headers.host);
     if (!clientId) {
         app(req, res);
         return;

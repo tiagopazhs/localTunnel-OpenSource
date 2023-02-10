@@ -4,8 +4,9 @@ const TunnelAgent = require('./TunnelAgent.js');
 
 function ClientManager() {
   const clients = new Map();
-  const stats = {
+  const status = {
     tunnels: 0,
+    ids: {}
   };
 
   async function newClient(id) {
@@ -25,7 +26,8 @@ function ClientManager() {
 
     try {
       const { port } = await agent.listen();
-      stats.tunnels += 1;
+      status.tunnels += 1;
+      status.ids[id] = status.tunnels;
       return { id, port, max_conn_count: maxSockets };
     } catch (err) {
       removeClient(id);
@@ -37,7 +39,7 @@ function ClientManager() {
     console.log(`removing client: ${id}`);
     const client = clients[id];
     if (!client) return;
-    stats.tunnels -= 1;
+    status.tunnels -= 1;
     delete clients[id];
     client.close();
   }
@@ -46,7 +48,7 @@ function ClientManager() {
     return clients[id];
   }
 
-  return { newClient, removeClient, getClient };
+  return { newClient, removeClient, getClient , status};
 }
 
 module.exports = ClientManager;
