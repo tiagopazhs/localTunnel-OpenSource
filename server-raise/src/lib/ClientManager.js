@@ -1,79 +1,55 @@
-const { hri } = require('human-readable-ids');
-
+const hri = require('human-readable-ids').hri;
 const Client = require('./Client.js');
 const TunnelAgent = require('./TunnelAgent.js');
 
-class ClientManager {
-    constructor(opt) {
-        this.opt = opt || {};
+function ClientManager() {
+  const clients = new Map();
+  const stats = {
+    tunnels: 0,
+  };
 
-        this.clients = new Map();
-
-        this.stats = {
-            tunnels: 0
-        };
-
-        this.graceTimeout = null;
+  async function newClient(id) {
+    if (clients[id]) {
+      id = hri.random();
     }
 
-    async newClient(id) {
-        const clients = this.clients;
-        const stats = this.stats;
+    const maxSockets = 10;
+    const agent = new TunnelAgent({ clientId: id, maxSockets });
+    const client = Client({ id, agent });
+    clients[id] = client;
 
-        if (clients[id]) {
-            id = hri.random();
-        }
+    client.once('close', () => {
+      removeClient(id);
+    });
 
-        const maxSockets = this.opt.max_tcp_sockets;
-        const agent = new TunnelAgent({
-            clientId: id,
-            maxSockets: 10,
-        });
-
-        const client = Client({
-            id,
-            agent,
-        });
-
-        clients[id] = client;
-
-        client.once('close', () => {
-            this.removeClient(id);
-        });
-
-        try {
-            const info = await agent.listen();
-            ++stats.tunnels;
-            return {
-                id: id,
-                port: info.port,
-                max_conn_count: maxSockets,
-            };
-        }
-        catch (err) {
-            this.removeClient(id);
-            throw err;
-        }
+    try {
+      const { port } = await agent.listen();
+      stats.tunnels += 1;
+      return { id, port, max_conn_count: maxSockets };
+    } catch (err) {
+      removeClient(id);
+      throw err;
     }
+  }
 
-    removeClient(id) {
-        console.log('removing client: %o', id);
-        const client = this.clients[id];
-        if (!client) {
-            return;
-        }
-        --this.stats.tunnels;
-        delete this.clients[id];
-        client.close();
-    }
+  function removeClient(id) {
+    console.log(`removing client: ${id}`);
+    const client = clients[id];
+    if (!client) return;
+    stats.tunnels -= 1;
+    delete clients[id];
+    client.close();
+  }
 
-    hasClient(id) {
-        return !!this.clients[id];
-    }
+  function hasClient(id) {
+    return !!clients[id];
+  }
 
-    getClient(id) {
-        return this.clients[id];
-    }
+  function getClient(id) {
+    return clients[id];
+  }
+
+  return { newClient, removeClient, hasClient, getClient };
 }
 
 module.exports = ClientManager;
