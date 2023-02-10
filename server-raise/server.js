@@ -1,35 +1,14 @@
 const express = require('express');
+const app = express();
 const http = require('http');
 const { hri } = require('human-readable-ids');
-const ClientManager = require('./src/lib/ClientManager');
 const { GetClientIdFromHostname } = require('./src/utils/index')
-const { argv } = require('./src/constants/config')
+const tuneis = require('./src/routes/tuneis')
+const { argv, manager } = require('./src/constants/config')
 
-const app = express();
-const router = express.Router();
-app.use(router);
 
-const manager = new ClientManager({ max_tcp_sockets: argv.maxsockets });
+app.use('/', tuneis)
 
-router.get('/', async (req, res) => {
-    if (req.path !== '/') {
-        next();
-        return;
-    }
-
-    if (req.query['new'] !== undefined) {
-        const reqId = hri.random();
-        console.log('making new client with id %s', reqId);
-        const info = await manager.newClient(reqId);
-
-        const url = 'http://' + info.id + '.' + req.hostname;
-        info.url = url;
-        res.json(info);
-        return;
-    }
-
-    res.redirect(landingPage);
-});
 
 const server = http.createServer((req, res) => {
     const hostname = req.headers.host;
