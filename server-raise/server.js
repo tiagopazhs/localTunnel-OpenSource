@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const http = require('http');
-const { GetClientIdFromHostname } = require('./src/utils/index')
+const { GetIdFromHost } = require('./src/utils/index')
 const tunnels = require('./src/routes/tunnels')
 const controlPanel = require('./src/routes/controlPanel')
 const { parameters, manager } = require('./src/constants/config')
@@ -10,7 +10,7 @@ app.use('/', tunnels)
 app.use('/control-panel', controlPanel)
 
 const server = http.createServer((req, res) => {
-    const clientId = GetClientIdFromHostname(req.headers.host);
+    const clientId = GetIdFromHost(req.headers.host);
     if (!clientId) {
         app(req, res);
         return;
@@ -19,7 +19,7 @@ const server = http.createServer((req, res) => {
     const client = manager.getClient(clientId);
     if (!client) {
         res.statusCode = 404;
-        res.end('404');
+        res.end('Tunnel not found');
         return;
     }
 
