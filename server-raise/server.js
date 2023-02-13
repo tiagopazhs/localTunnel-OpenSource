@@ -1,13 +1,13 @@
 const express = require('express');
 const app = express();
 const http = require('http');
-const { GetIdFromHost } = require('./src/utils/index')
-const tunnels = require('./src/routes/tunnels')
-const controlPanel = require('./src/routes/controlPanel')
-const { parameters, manager } = require('./src/constants/config')
+const { GetIdFromHost, getClient } = require('./src/utils/index')
+const tunnels = require('./src/routes/tunnelsRouter')
+const panel = require('./src/routes/panelRouter')
+const { parameters } = require('./src/config/config')
 
 app.use('/', tunnels)
-app.use('/control-panel', controlPanel)
+app.use('/panel', panel)
 
 const server = http.createServer((req, res) => {
     const clientId = GetIdFromHost(req.headers.host);
@@ -16,7 +16,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    const client = manager.getClient(clientId);
+    const client = getClient(clientId);
     if (!client) {
         res.statusCode = 404;
         res.end('Tunnel not found');
