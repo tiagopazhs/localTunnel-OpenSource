@@ -15,7 +15,7 @@ function ClientManager() {
     }
 
     const maxSockets = 10;
-    const agent = new TunnelAgent({ clientId: id, maxSockets });
+    const agent = TunnelAgent({ clientId: id, maxSockets });
     const client = Client({ id, agent });
     clients[id] = client;
     
