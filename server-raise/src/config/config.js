@@ -1,6 +1,3 @@
-const ClientManager = require('../lib/ClientManager');
-const manager = ClientManager();
-
 const parameters = {
     port: 3006,
     address: '0.0.0.0',
@@ -10,4 +7,4 @@ const parameters = {
     maxsockets: 10,
 };
 
-module.exports = { parameters, manager};
+module.exports = { parameters };

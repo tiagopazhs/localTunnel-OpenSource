@@ -129,7 +129,7 @@ const TunnelAgent = () => {
 
     AgentTun.destroy = () => {
         AgentTun.server.close();
-        destroy();
+        AgentTun.destroy();
     }
 
     return AgentTun;
