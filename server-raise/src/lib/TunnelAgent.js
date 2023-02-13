@@ -1,5 +1,6 @@
 const { Agent } = require('http');
 const net = require('net');
+const { parameters } = require('../config/config')
 
 const TunnelAgent = () => {
 
@@ -16,7 +17,7 @@ const TunnelAgent = () => {
     AgentTun.started = false;
     AgentTun.closed = false;
 
-    AgentTun.stats = () =>{
+    AgentTun.stats = () => {
         return {
             connectedSockets: AgentTun.connectedSockets,
         };
@@ -42,7 +43,7 @@ const TunnelAgent = () => {
         return new Promise((resolve) => {
             server.listen(() => {
                 const port = server.address().port;
-                console.log('tcp server listening on port: %d', port);
+                console.log('tcp server listening on port: ', port);
 
                 resolve({
                     port: port,
@@ -62,7 +63,7 @@ const TunnelAgent = () => {
     }
 
     AgentTun._onConnection = (socket) => {
-        if (AgentTun.connectedSockets >= AgentTun.maxTcpSockets) {
+        if (AgentTun.connectedSockets >= parameters.maxsockets) {
             console.log('no more sockets allowed');
             socket.destroy();
             return false;

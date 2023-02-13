@@ -1,34 +1,30 @@
 const http = require('http');
 const pump = require('pump');
 const EventEmitter = require('events');
+// let agent = require('../utils/index')
 
-const Client = (options) => {
+const Client = (opt) => {
     const client = new EventEmitter();
 
-    const agent = options.agent;
-    const id = options.id;
+    const agent = opt.agent;
 
     client.graceTimeout = setTimeout(() => {
         client.close();
     }, 1000).unref();
 
     agent.on('online', () => {
-        console.log('client online %s', id);
+        console.log('client online %s', opt.id);
         clearTimeout(client.graceTimeout);
     });
 
     agent.on('offline', () => {
-        console.log('client offline %s', id);
+        console.log('client offline %s', opt.id);
 
         clearTimeout(client.graceTimeout);
 
         client.graceTimeout = setTimeout(() => {
             client.close();
         }, 1000).unref();
-    });
-
-    agent.once('error', (err) => {
-        client.close();
     });
 
     client.stats = () => {
@@ -57,40 +53,6 @@ const Client = (options) => {
         clientReq.once('error', (err) => { });
 
         pump(req, clientReq);
-    };
-
-    client.handleUpgrade = (req, socket) => {
-        socket.once('error', (err) => {
-            if (err.code == 'ECONNRESET' || err.code == 'ETIMEDOUT') {
-                return;
-            }
-            console.error(err);
-        });
-
-        agent.createConnection({}, (err, conn) => {
-            if (err) {
-                socket.end();
-                return;
-            }
-
-            if (!socket.readable || !socket.writable) {
-                conn.destroy();
-                socket.end();
-                return;
-            }
-
-            const arr = [`${req.method} ${req.url} HTTP/${req.httpVersion}`];
-            for (let i = 0; i < req.rawHeaders.length - 1; i += 2) {
-                arr.push(`${req.rawHeaders[i]}: ${req.rawHeaders[i + 1]}`);
-            }
-
-            arr.push('');
-            arr.push('');
-
-            pump(conn, socket);
-            pump(socket, conn);
-            conn.write(arr.join('\r\n'));
-        });
     };
 
     return client;
