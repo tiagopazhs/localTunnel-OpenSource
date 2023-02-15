@@ -73,7 +73,7 @@ docker run -d \
 
 *tests with server running local
     example: localhost:3000
-    in this case add the bellow sentence in GetClientIdFromHostname function of ./server.js
+    in this case add the bellow sentence in GetIdFromHost function of ./server.js
     hostname = hostname.replace(':3000', '.com.br')
 
 *host with already a subdomain
