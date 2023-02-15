@@ -1,8 +1,9 @@
 const { parameters } = require('../config/config')
 const { hri } = require('human-readable-ids');
-const { newClient } = require('../services/tunnelsService')
+const { newClient } = require('../services/TunnelsService')
 
-exports.getStartTunnel = async (req, res) => {
+exports.getStartTunnel = async (req, res, next) => {
+    console.log('rotaInicial')
     if (req.query['new'] !== undefined) {
         const reqId = hri.random();
         console.log('making new client with id ', reqId);
@@ -13,4 +14,5 @@ exports.getStartTunnel = async (req, res) => {
     } else {
         res.json({ msg: parameters.landingPage })
     }
+    next
 }

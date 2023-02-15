@@ -1,10 +1,10 @@
 const router = require('express').Router();
-const panelController = require('../controllers/panelController')
+const PanelController = require('../controllers/PanelController')
 
-router.get('/', panelController.getControlPanel);
+router.get('/', PanelController.getControlPanel);
 
-router.get('/tunnels', panelController.getAllTunnels);
+router.get('/tunnels', PanelController.getAllTunnels);
 
-router.get('/tunnel/:id', panelController.getTunnelStatus);
+router.get('/tunnel/:id', PanelController.getTunnelStatus);
 
 module.exports = router

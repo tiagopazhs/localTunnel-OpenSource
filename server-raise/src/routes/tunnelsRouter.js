@@ -1,6 +1,6 @@
 const router = require('express').Router();
-const tunnels = require('../controllers/tunnelsController')
+const TunnelsController = require('../controllers/TunnelsController')
 
-router.get('/', tunnels.getStartTunnel);
+router.get('/', TunnelsController.getStartTunnel);
 
 module.exports = router

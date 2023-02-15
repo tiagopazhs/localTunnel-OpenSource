@@ -10,4 +10,8 @@ function getId(hostname) {
     return id;
 }
 
+function hasId () {
+    return 
+}
+
 module.exports = { getId }
