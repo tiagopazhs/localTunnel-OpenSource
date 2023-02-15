@@ -1,6 +1,6 @@
 const { parameters } = require('../config/config')
 const { hri } = require('human-readable-ids');
-const { newClient } = require('../utils/index')
+const { newClient } = require('../services/tunnelsService')
 
 exports.getStartTunnel = async (req, res) => {
     if (req.query['new'] !== undefined) {

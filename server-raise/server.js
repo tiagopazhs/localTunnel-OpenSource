@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const http = require('http');
-const { GetIdFromHost, getClient } = require('./src/utils/index')
+const { getClient } = require('./src/services/tunnelsService')
+const { GetIdFromHost } = require('./src/utils/index')
 const tunnels = require('./src/routes/tunnelsRouter')
 const panel = require('./src/routes/panelRouter')
 const { parameters } = require('./src/config/config')

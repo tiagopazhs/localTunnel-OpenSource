@@ -1,7 +1,7 @@
 const http = require('http');
 const pump = require('pump');
 const EventEmitter = require('events');
-// let agent = require('../utils/index')
+// let agent = require(../services/tunnelsService)
 
 const Client = (opt) => {
     const client = new EventEmitter();
