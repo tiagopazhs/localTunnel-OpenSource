@@ -1,8 +1,8 @@
 const { getClient } = require('../services/tunnelsService')
-const { GetIdFromHost } = require('../utils/index')
+const { getId } = require('../utils/index')
 
 const TunnelsMiddleware = (req, res, next) => {
-    const clientId = GetIdFromHost(req.headers.host);
+    const clientId = getId(req.headers.host);
     if (!clientId) {
         return next();
     }
