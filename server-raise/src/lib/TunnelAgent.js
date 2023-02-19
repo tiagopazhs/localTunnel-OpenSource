@@ -129,6 +129,7 @@ const TunnelAgent = () => {
     }
 
     AgentTun.destroy = () => {
+        console.log('emit destroy')
         AgentTun.server.close();
         AgentTun.destroy();
     }
