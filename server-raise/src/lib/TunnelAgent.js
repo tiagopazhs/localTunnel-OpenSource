@@ -2,6 +2,7 @@ const { Agent } = require('http');
 const net = require('net');
 const { parameters } = require('../config/config')
 const destroy = require('../utils/destroy');
+const createConnection = require('../utils/create-connection.util')
 
 class TunnelAgent extends Agent {
   availableSockets = [];
@@ -101,26 +102,12 @@ class TunnelAgent extends Agent {
     this.availableSockets.push(socket);
   };
 
-  createConnection = (options, cb) => {
-    if (this.closed) {
-      cb(new Error('closed'));
-      return;
-    }
+  createConnection(options, cb) {
+    createConnection(this, options)
+      .then(sock => cb(null, sock))
+      .catch(err => cb(err));
+  }
 
-    console.log('create connection');
-
-    const sock = this.availableSockets.shift();
-
-    if (!sock) {
-      this.waitingCreateConn.push(cb);
-      console.log('waiting connected: %s', this.connectedSockets);
-      console.log('waiting available: %s', this.availableSockets.length);
-      return;
-    }
-
-    console.log('socket given');
-    cb(null, sock);
-  };
 
   destroy = (next) => {
     destroy(this.server, next);
