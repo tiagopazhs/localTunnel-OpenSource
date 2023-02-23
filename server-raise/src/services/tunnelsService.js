@@ -1,4 +1,4 @@
-const Client = require('../lib/Client');
+const Client = require('../services/Client');
 const TunnelAgent = require('../lib/TunnelAgent.js');
 let currentTunnels = {tunnels: 0, ids: {}}
 const clients = new Map()
