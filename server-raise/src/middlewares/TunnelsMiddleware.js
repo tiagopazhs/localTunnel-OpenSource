@@ -1,4 +1,4 @@
-const { getClient } = require('../services/tunnelsService')
+const { getClient } = require('../services/TunnelsService')
 const { getId } = require('../utils/index')
 
 const TunnelsMiddleware = (req, res, next) => {
