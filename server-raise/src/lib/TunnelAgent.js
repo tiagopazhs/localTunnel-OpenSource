@@ -1,6 +1,7 @@
 const { Agent } = require('http');
 const net = require('net');
 const { parameters } = require('../config/config')
+const destroy = require('../utils/destroy');
 
 class TunnelAgent extends Agent {
   availableSockets = [];
@@ -41,8 +42,9 @@ class TunnelAgent extends Agent {
       });
     });
 
-    return { port };
+    return { port, destroy: (next) => destroy(this.server, next) };
   };
+
 
   _onClose = () => {
     this.closed = true;
@@ -121,8 +123,7 @@ class TunnelAgent extends Agent {
   };
 
   destroy = (next) => {
-    console.log('emit destroy');
-    this.server.close(next);
+    destroy(this.server, next);
   };
 }
 
