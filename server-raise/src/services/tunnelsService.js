@@ -9,7 +9,7 @@ function tunnelAction (param, id) {
 };
 
 async function newClient(id) {
-    const agent = TunnelAgent({ clientId: id});
+    const agent = new TunnelAgent({ clientId: id});
     const client = Client({ id, agent });
     clients[id] = client;
     const { port } = await agent.listen();
