@@ -128,10 +128,10 @@ const TunnelAgent = () => {
         cb(null, sock);
     }
 
-    AgentTun.destroy = () => {
+    AgentTun.destroy = (next) => {
         console.log('emit destroy')
         AgentTun.server.close();
-        AgentTun.destroy();
+        next
     }
 
     return AgentTun;
