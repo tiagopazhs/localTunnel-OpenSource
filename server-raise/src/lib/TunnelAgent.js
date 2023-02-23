@@ -2,140 +2,128 @@ const { Agent } = require('http');
 const net = require('net');
 const { parameters } = require('../config/config')
 
-const TunnelAgent = () => {
+class TunnelAgent extends Agent {
+  availableSockets = [];
+  waitingCreateConn = [];
+  connectedSockets = 0;
+  started = false;
+  closed = false;
 
-    const AgentTun = new Agent({
-        keepAlive: true,
-        maxFreeSockets: 1,
+  stats = () => {
+    return {
+      connectedSockets: this.connectedSockets,
+    };
+  };
+
+  listen = async () => {
+    if (this.started) {
+      throw new Error('already started');
+    }
+    this.started = true;
+
+    this.server = net.createServer();
+
+    this.server.on('close', this._onClose);
+    this.server.on('connection', this._onConnection);
+    this.server.on('error', (err) => {
+      if (err.code == 'ECONNRESET' || err.code == 'ETIMEDOUT') {
+        return;
+      }
+      console.error(err);
     });
 
-    AgentTun.availableSockets = [];
-    AgentTun.waitingCreateConn = [];
-    AgentTun.connectedSockets = 0;
+    const port = await new Promise((resolve) => {
+      this.server.listen(() => {
+        const port = this.server.address().port;
+        console.log('tcp server listening on port: ', port);
 
-    AgentTun.server = net.createServer();
-    AgentTun.started = false;
-    AgentTun.closed = false;
+        resolve(port);
+      });
+    });
 
-    AgentTun.stats = () => {
-        return {
-            connectedSockets: AgentTun.connectedSockets,
-        };
+    return { port };
+  };
+
+  _onClose = () => {
+    this.closed = true;
+    console.log('closed tcp socket %s');
+    for (const conn of this.waitingCreateConn) {
+      conn(new Error('closed'), null);
+    }
+    this.waitingCreateConn = [];
+    this.emit('end');
+  };
+
+  _onConnection = (socket) => {
+    if (this.connectedSockets >= parameters.maxsockets) {
+      console.log('no more sockets allowed');
+      socket.destroy();
+      return false;
     }
 
-    AgentTun.listen = () => {
-        const server = AgentTun.server;
-        if (AgentTun.started) {
-            throw new Error('already started');
-        }
-        AgentTun.started = true;
+    socket.once('close', (hadError) => {
+      console.log('closed socket (error: %s)', hadError);
+      this.connectedSockets -= 1;
+      const idx = this.availableSockets.indexOf(socket);
+      if (idx >= 0) {
+        this.availableSockets.splice(idx, 1);
+      }
 
-        server.on('close', AgentTun._onClose.bind(this));
-        server.on('connection', AgentTun._onConnection.bind(this));
-        server.on('error', (err) => {
-            if (err.code == 'ECONNRESET' || err.code == 'ETIMEDOUT') {
-                return;
-            }
-            console.error(err);
-        });
+      console.log('connected sockets: %s', this.connectedSockets);
+      if (this.connectedSockets <= 0) {
+        console.log('all sockets disconnected');
+        this.emit('offline');
+      }
+    });
 
+    socket.once('error', (err) => {
+      socket.destroy();
+    });
 
-        return new Promise((resolve) => {
-            server.listen(() => {
-                const port = server.address().port;
-                console.log('tcp server listening on port: ', port);
-
-                resolve({
-                    port: port,
-                });
-            });
-        });
+    if (this.connectedSockets === 0) {
+      this.emit('online');
     }
 
-    AgentTun._onClose = () => {
-        AgentTun.closed = true;
-        console.log('closed tcp socket %s');
-        for (const conn of AgentTun.waitingCreateConn) {
-            conn(new Error('closed'), null);
-        }
-        AgentTun.waitingCreateConn = [];
-        AgentTun.emit('end');
+    this.connectedSockets += 1;
+    console.log('new connection from: %s:%s', socket.address().address, socket.address().port);
+
+    const fn = this.waitingCreateConn.shift();
+    if (fn) {
+      console.log('giving socket to queued conn request');
+      setTimeout(() => {
+        fn(null, socket);
+      }, 0);
+      return;
     }
 
-    AgentTun._onConnection = (socket) => {
-        if (AgentTun.connectedSockets >= parameters.maxsockets) {
-            console.log('no more sockets allowed');
-            socket.destroy();
-            return false;
-        }
+    this.availableSockets.push(socket);
+  };
 
-        socket.once('close', (hadError) => {
-            console.log('closed socket (error: %s)', hadError);
-            AgentTun.connectedSockets -= 1;
-            const idx = AgentTun.availableSockets.indexOf(socket);
-            if (idx >= 0) {
-                AgentTun.availableSockets.splice(idx, 1);
-            }
-
-            console.log('connected sockets: %s', AgentTun.connectedSockets);
-            if (AgentTun.connectedSockets <= 0) {
-                console.log('all sockets disconnected');
-                AgentTun.emit('offline');
-            }
-        });
-
-        socket.once('error', (err) => {
-            socket.destroy();
-        });
-
-        if (AgentTun.connectedSockets === 0) {
-            AgentTun.emit('online');
-        }
-
-        AgentTun.connectedSockets += 1;
-        console.log('new connection from: %s:%s', socket.address().address, socket.address().port);
-
-        const fn = AgentTun.waitingCreateConn.shift();
-        if (fn) {
-            console.log('giving socket to queued conn request');
-            setTimeout(() => {
-                fn(null, socket);
-            }, 0);
-            return;
-        }
-
-        AgentTun.availableSockets.push(socket);
+  createConnection = (options, cb) => {
+    if (this.closed) {
+      cb(new Error('closed'));
+      return;
     }
 
-    AgentTun.createConnection = (options, cb) => {
-        if (AgentTun.closed) {
-            cb(new Error('closed'));
-            return;
-        }
+    console.log('create connection');
 
-        console.log('create connection');
+    const sock = this.availableSockets.shift();
 
-        const sock = AgentTun.availableSockets.shift();
-
-        if (!sock) {
-            AgentTun.waitingCreateConn.push(cb);
-            console.log('waiting connected: %s', AgentTun.connectedSockets);
-            console.log('waiting available: %s', AgentTun.availableSockets.length);
-            return;
-        }
-
-        console.log('socket given');
-        cb(null, sock);
+    if (!sock) {
+      this.waitingCreateConn.push(cb);
+      console.log('waiting connected: %s', this.connectedSockets);
+      console.log('waiting available: %s', this.availableSockets.length);
+      return;
     }
 
-    AgentTun.destroy = (next) => {
-        console.log('emit destroy')
-        AgentTun.server.close();
-        next
-    }
+    console.log('socket given');
+    cb(null, sock);
+  };
 
-    return AgentTun;
-
+  destroy = (next) => {
+    console.log('emit destroy');
+    this.server.close(next);
+  };
 }
 
-module.exports = TunnelAgent;
+module.exports = TunnelAgent
