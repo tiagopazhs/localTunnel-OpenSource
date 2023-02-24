@@ -1,5 +1,3 @@
-// createConnection.js
-
 module.exports = function createConnection(agent, options) {
   return new Promise((resolve, reject) => {
     if (agent.closed) {
