@@ -1,4 +1,5 @@
 const { Agent } = require('http');
+const TunnelAgentStats = require('../utils/TunnelAgentStats');
 const net = require('net');
 const { parameters } = require('../config/config')
 const destroy = require('../utils/destroy');
@@ -11,11 +12,7 @@ class TunnelAgent extends Agent {
   started = false;
   closed = false;
 
-  stats = () => {
-    return {
-      connectedSockets: this.connectedSockets,
-    };
-  };
+  stats = TunnelAgentStats(Agent);
 
   listen = async () => {
     if (this.started) {
