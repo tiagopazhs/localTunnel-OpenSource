@@ -1,7 +1,7 @@
 const { Agent } = require('http');
-const TunnelAgentStats = require('../utils/TunnelAgentStats');
+const TunnelAgentStats = require('../utils/agent-stats.util');
 const net = require('net');
-const destroy = require('../utils/destroy');
+const destroy = require('../utils/destroy.util');
 const createConnection = require('../utils/create-connection.util');
 const TunnelAgentServer = require('../middlewares/TunnelAgentServer');
 

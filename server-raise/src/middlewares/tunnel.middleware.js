@@ -1,5 +1,5 @@
-const { getClient } = require('../services/TunnelsService')
-const { getId } = require('../utils/index')
+const { getClient } = require('../services/tunnel.service')
+const { getId } = require('../utils/subdomain.util')
 
 const tunnelMiddleware = (req, res, next) => {
     const clientId = getId(req.headers.host);

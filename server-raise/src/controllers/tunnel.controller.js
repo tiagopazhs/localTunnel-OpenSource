@@ -1,6 +1,6 @@
 const { parameters } = require('../config/config')
 const { hri } = require('human-readable-ids');
-const { newClient } = require('../services/TunnelsService')
+const { newClient } = require('../services/tunnel.service')
 
 exports.getStartTunnel = async (req, res) => {
     console.log('rotaInicial')
