@@ -1,36 +1,67 @@
+const http = require('http');
+const pump = require('pump');
 const EventEmitter = require('events');
-const { handleOnline, handleOffline } = require('../utils/eventHandlers');
-const { stats, close, handleRequestWrapper } = require('./methods');
 
-const Client = (opt) => {
-  const client = new EventEmitter();
-  const agent = opt.agent;
+class Client extends EventEmitter {
+  constructor(options) {
+    super();
 
-  client.graceTimeout = setTimeout(() => {
-    client.close();
-  }, 1000).unref();
+    const agent = this.agent = options.agent;
+    const id = this.id = options.id;
 
-  agent.on('online', () => {
-    handleOnline(client, opt);
-  });
+    this.graceTimeout = setTimeout(() => {
+      this.close();
+    }, 1000).unref();
 
-  agent.on('offline', () => {
-    handleOffline(client, opt);
-  });
+    agent.on('online', () => {
+      console.log('client online %s', id);
+      clearTimeout(this.graceTimeout);
+    });
 
-  client.stats = () => {
-    return stats(agent);
-  };
+    agent.on('offline', () => {
+      console.log('client offline %s', id);
 
-  client.close = () => {
-    close(client, agent);
-  };
+      clearTimeout(this.graceTimeout);
 
-  client.handleRequest = (req, res) => {
-    handleRequestWrapper(client, req, res, agent);
-  };
+      this.graceTimeout = setTimeout(() => {
+        this.close();
+      }, 1000).unref();
+    });
 
-  return client;
-};
+    agent.once('error', (err) => {
+      this.close();
+    });
+  }
+
+  stats() {
+    return this.agent.stats();
+  }
+
+  close() {
+    clearTimeout(this.graceTimeout);
+    this.agent.destroy();
+    this.emit('close');
+  }
+
+  handleRequest(req, res) {
+    const opt = {
+      path: req.url,
+      agent: this.agent,
+      method: req.method,
+      headers: req.headers
+    };
+
+    const clientReq = http.request(opt, (clientRes) => {
+      res.writeHead(clientRes.statusCode, clientRes.headers);
+
+      pump(clientRes, res);
+    });
+
+    clientReq.once('error', (err) => {
+    });
+
+    pump(req, clientReq);
+  }
+}
 
 module.exports = Client;
