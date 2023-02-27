@@ -3,7 +3,7 @@ const Net = require('net');
 const AgentStats = require('../utils/agent-stats.util');
 const Destroy = require('../utils/destroy.util');
 const CreateConnection = require('../utils/create-connection.util');
-const AgentMiddleware = require('../middlewares/agent.middleware');
+const SocketsManager = require('../services/sockets-manager.service');
 
 class tunnelAgent extends Agent {
   availableSockets = [];
@@ -22,8 +22,8 @@ class tunnelAgent extends Agent {
 
     this.server = Net.createServer();
 
-    this.server.on('close', AgentMiddleware._onClose.bind(this));
-    this.server.on('connection', AgentMiddleware._onConnection.bind(this));
+    this.server.on('close', SocketsManager._onClose.bind(this));
+    this.server.on('connection', SocketsManager._onConnection.bind(this));
     this.server.on('error', (err) => {
       if (err.code == 'ECONNRESET' || err.code == 'ETIMEDOUT') {
         return;
