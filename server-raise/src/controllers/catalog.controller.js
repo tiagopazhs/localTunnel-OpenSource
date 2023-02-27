@@ -1,7 +1,7 @@
 const { currentTunnels } = require('../services/TunnelsService')
 
 exports.getControlPanel = async (req, res) => {
-    res.json("Choose your router: /tunnels => General tunnels status. /tunnel/:tunnelId => Status of your specific tunnel.");
+    res.json("Choose your router: /tunnels-list => General tunnels status. /tunnel-status/:tunnelId => Status of your specific tunnel.");
 }
 
 exports.getAllTunnels = async (req, res) => {
