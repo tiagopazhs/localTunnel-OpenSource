@@ -1,5 +1,5 @@
-const Client = require('./client')
-const TunnelAgent = require('./TunnelAgent');
+const Client = require('./client.service')
+const TunnelAgent = require('./agent.service');
 let currentTunnels = {tunnels: 0, ids: {}}
 const clients = new Map()
 
