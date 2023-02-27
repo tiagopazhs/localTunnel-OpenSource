@@ -2,12 +2,12 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-const TunnelsMiddleware = require('./src/middlewares/TunnelsMiddleware')
-const TunnelsRouter = require('./src/routes/TunnelsRouter')
+const TunnelMiddleware = require('./src/middlewares/tunnel.middleware')
+const TunnelRouter = require('./src/routes/tunnel.router')
 const Catalog = require('./src/routes/catalog.router')
 const { parameters } = require('./src/config/config')
 
-app.use('/', TunnelsMiddleware, TunnelsRouter)
+app.use('/', TunnelMiddleware, TunnelRouter)
 app.use('/catalog', Catalog)
 
 server.listen(parameters.port, parameters.address, () => {

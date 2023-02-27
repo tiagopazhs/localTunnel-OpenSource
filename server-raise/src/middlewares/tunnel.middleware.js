@@ -1,7 +1,7 @@
 const { getClient } = require('../services/TunnelsService')
 const { getId } = require('../utils/index')
 
-const TunnelsMiddleware = (req, res, next) => {
+const tunnelMiddleware = (req, res, next) => {
     const clientId = getId(req.headers.host);
     if (!clientId) {
         return next();
@@ -19,4 +19,4 @@ const TunnelsMiddleware = (req, res, next) => {
     // next()
 }
 
-module.exports = TunnelsMiddleware
+module.exports = tunnelMiddleware
