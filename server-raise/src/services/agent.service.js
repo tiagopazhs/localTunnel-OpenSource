@@ -1,6 +1,6 @@
 const { Agent } = require('http');
 const Net = require('net');
-const AgentStats = require('../utils/agent-stats.util');
+const AgentStatus = require('../utils/agent-status.util');
 const Destroy = require('../utils/destroy.util');
 const CreateConnection = require('../utils/create-connection.util');
 const SocketsManager = require('../services/sockets-manager.service');
@@ -12,7 +12,7 @@ class tunnelAgent extends Agent {
   started = false;
   closed = false;
 
-  stats = AgentStats(Agent);
+  status = AgentStatus(Agent);
 
   listen = async () => {
     if (this.started) {

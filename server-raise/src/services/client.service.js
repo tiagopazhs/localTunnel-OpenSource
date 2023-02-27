@@ -33,8 +33,8 @@ class client extends EventEmitter {
     });
   }
 
-  stats() {
-    return this.agent.stats();
+  status() {
+    return this.agent.status();
   }
 
   close() {
