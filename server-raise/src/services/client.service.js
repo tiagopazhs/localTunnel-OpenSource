@@ -1,8 +1,8 @@
-const http = require('http');
-const pump = require('pump');
+const Http = require('http');
+const Pump = require('pump');
 const EventEmitter = require('events');
 
-class Client extends EventEmitter {
+class client extends EventEmitter {
   constructor(options) {
     super();
 
@@ -51,17 +51,17 @@ class Client extends EventEmitter {
       headers: req.headers
     };
 
-    const clientReq = http.request(opt, (clientRes) => {
+    const clientReq = Http.request(opt, (clientRes) => {
       res.writeHead(clientRes.statusCode, clientRes.headers);
 
-      pump(clientRes, res);
+      Pump(clientRes, res);
     });
 
     clientReq.once('error', (err) => {
     });
 
-    pump(req, clientReq);
+    Pump(req, clientReq);
   }
 }
 
-module.exports = Client;
+module.exports = client;

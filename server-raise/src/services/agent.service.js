@@ -1,18 +1,18 @@
 const { Agent } = require('http');
-const TunnelAgentStats = require('../utils/agent-stats.util');
-const net = require('net');
-const destroy = require('../utils/destroy.util');
-const createConnection = require('../utils/create-connection.util');
-const TunnelAgentServer = require('../middlewares/TunnelAgentServer');
+const Net = require('net');
+const AgentStats = require('../utils/agent-stats.util');
+const Destroy = require('../utils/destroy.util');
+const CreateConnection = require('../utils/create-connection.util');
+const AgentMiddleware = require('../middlewares/agent.middleware');
 
-class TunnelAgent extends Agent {
+class tunnelAgent extends Agent {
   availableSockets = [];
   waitingCreateConn = [];
   connectedSockets = 0;
   started = false;
   closed = false;
 
-  stats = TunnelAgentStats(Agent);
+  stats = AgentStats(Agent);
 
   listen = async () => {
     if (this.started) {
@@ -20,10 +20,10 @@ class TunnelAgent extends Agent {
     }
     this.started = true;
 
-    this.server = net.createServer();
+    this.server = Net.createServer();
 
-    this.server.on('close', TunnelAgentServer._onClose.bind(this));
-    this.server.on('connection', TunnelAgentServer._onConnection.bind(this));
+    this.server.on('close', AgentMiddleware._onClose.bind(this));
+    this.server.on('connection', AgentMiddleware._onConnection.bind(this));
     this.server.on('error', (err) => {
       if (err.code == 'ECONNRESET' || err.code == 'ETIMEDOUT') {
         return;
@@ -44,14 +44,14 @@ class TunnelAgent extends Agent {
   };
 
   createConnection(options, cb) {
-    createConnection(this, options)
+    CreateConnection(this, options)
       .then(sock => cb(null, sock))
       .catch(err => cb(err));
   }
 
   destroy = (next) => {
-    destroy(this.server, next);
+    Destroy(this.server, next);
   };
 }
 
-module.exports = TunnelAgent;
+module.exports = tunnelAgent;

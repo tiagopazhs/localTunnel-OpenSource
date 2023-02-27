@@ -1,10 +1,10 @@
 const router = require('express').Router();
-const Catalog = require('../controllers/catalog.controller')
+const CatalogController = require('../controllers/catalog.controller')
 
-router.get('/', Catalog.getControlPanel);
+router.get('/', CatalogController.getControlPanel);
 
-router.get('/tunnels-list', Catalog.getAllTunnels);
+router.get('/tunnels-list', CatalogController.getAllTunnels);
 
-router.get('/tunnel-status/:id', Catalog.getTunnelStatus);
+router.get('/tunnel-status/:id', CatalogController.getTunnelStatus);
 
 module.exports = router

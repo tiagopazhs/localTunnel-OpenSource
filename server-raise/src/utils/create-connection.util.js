@@ -1,4 +1,5 @@
-module.exports = function createConnection(agent, options) {
+function createConnection(agent, options) {
+  
   return new Promise((resolve, reject) => {
     if (agent.closed) {
       reject(new Error('closed'));
@@ -26,3 +27,5 @@ module.exports = function createConnection(agent, options) {
     resolve(sock);
   });
 };
+
+module.exports = createConnection
