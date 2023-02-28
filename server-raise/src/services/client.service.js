@@ -1,6 +1,5 @@
-const Http = require('http');
-const Pump = require('pump');
 const EventEmitter = require('events');
+const HandleClientReq = require('../utils/handle-client-req.util');
 
 class client extends EventEmitter {
   constructor(options) {
@@ -43,25 +42,10 @@ class client extends EventEmitter {
     this.emit('close');
   }
 
-  handleRequest(req, res) {
-    const opt = {
-      path: req.url,
-      agent: this.agent,
-      method: req.method,
-      headers: req.headers
-    };
+  handleRequest = (req, res) => {
+    HandleClientReq(req, res, this.agent);
+  };
 
-    const clientReq = Http.request(opt, (clientRes) => {
-      res.writeHead(clientRes.statusCode, clientRes.headers);
-
-      Pump(clientRes, res);
-    });
-
-    clientReq.once('error', (err) => {
-    });
-
-    Pump(req, clientReq);
-  }
 }
 
 module.exports = client;
