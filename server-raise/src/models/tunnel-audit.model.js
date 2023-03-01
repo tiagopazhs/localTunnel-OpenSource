@@ -1,12 +1,21 @@
 const mongoose = require('mongoose');
 
-const Audit = mongoose.model('Audit', {
-    tunnelId: String,
-    creationDate: String,
-    open: Boolean,
-})
+const auditSchema = new mongoose.Schema({
+  tunnelId: {
+    type: String,
+    required: true
+  },
+  creationDate: {
+    type: String,
+    required: true
+  },
+  open: {
+    type: Boolean,
+    required: true,
+    default: false
+  }
+});
 
-module.exports = Audit
+const Audit = mongoose.model('Audit', auditSchema);
 
-
-
+module.exports = Audit;
