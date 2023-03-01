@@ -6,11 +6,12 @@ const auditSchema = new mongoose.Schema({
     required: true
   },
   creationDate: {
-    type: String,
-    required: true
+    type: Date,
+    required: true,
+    default: mongoose.now
   },
-  open: {
-    type: Boolean,
+  type: {
+    type: String,
     required: true,
     default: false
   }
