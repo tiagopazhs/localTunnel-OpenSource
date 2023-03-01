@@ -5,8 +5,9 @@ const auditLog = require('../utils/audit.util')
 
 exports.getStartTunnel = async (req, res) => {
     console.log('Received request' + parameters.marker)
-    if (req.query['new'] !== undefined) {
-        const reqId = hri.random();
+    if (req.originalUrl !== "/") {
+        let reqId = req.originalUrl.slice(1);
+        if(reqId === "?new") reqId = await hri.random();
         auditLog(reqId, "create connection")
 
         const info = await newClient(reqId);
