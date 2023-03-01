@@ -7,6 +7,11 @@ const TunnelRouter = require('./src/routes/tunnel.router')
 const Catalog = require('./src/routes/catalog.router')
 const { parameters } = require('./src/config/config')
 
+//User env file to enter with password
+require('dotenv').config()
+const DB_USER = process.env.DB_USER
+const DB_PASSWORD = encodeURIComponent(process.env.DB_PASSWORD)
+
 app.use('/', TunnelMiddleware, TunnelRouter)
 app.use('/catalog', Catalog)
 
