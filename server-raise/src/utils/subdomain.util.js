@@ -1,13 +1,23 @@
 const { parameters } = require('../config/config')
 
-function getId(hostname) {
+function splitUrl(url) {
+    return url.split(parameters.host)
+}
 
-    const handleUrl = hostname.split(parameters.host)
-    let id = handleUrl[0]
-    if (id.endsWith('.')) id = id.slice(0, -1) //Verify is the id ends with a dot and remove it
-    const route = handleUrl[1]
+function getId(hostname) {
+    let id = splitUrl(hostname)[0]
+    if (id.endsWith('.')) id = id.slice(0, -1) //Verify is the id ends with a dot and remove it 
 
     return id;
 }
 
-module.exports = { getId }
+function getRouter(hostname) {
+    return splitUrl(hostname)[1]
+}
+
+function hasSubdomain(hostname) {
+    if (getId(hostname) !== '') return true
+    else return false
+}
+
+module.exports = {getId, getRouter, hasSubdomain}
