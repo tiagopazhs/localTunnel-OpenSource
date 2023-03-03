@@ -4,7 +4,7 @@ const { newClient } = require('../services/tunnel.service')
 
 exports.getStartTunnel = async (req, res) => {
 
-    let reqId = req.originalUrl.split("/")[1]
+    let reqId = req.originalUrl.split("/")[2]
     if (reqId === "?new") reqId = await hri.random();
 
     const info = await newClient(reqId);
