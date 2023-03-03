@@ -4,6 +4,7 @@ const { getId } = require('../utils/subdomain.util')
 const tunnelMiddleware = (req, res, next) => {
     const clientId = getId(req.headers.host);
     if (!clientId) {
+        req.url = '/'
         return next();
     }
 
