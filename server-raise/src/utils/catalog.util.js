@@ -12,10 +12,8 @@ async function catalogLog(id, status) {
             await axios.post(`http://${parameters.host}/catalog`, data);
         }
 
-        console.log(`Catalog change: ${status} id: ${id}`);
-    } catch (error) {
-        console.error(error);
-    }
+        console.log(`${parameters.logMarker} Catalog: ${status} id: ${id} ${parameters.logMarker}`);
+    } catch (error) { }
 }
 
 module.exports = catalogLog

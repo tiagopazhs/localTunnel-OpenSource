@@ -7,7 +7,8 @@ const parameters = {
     landingPage: 'Localtunnel server is running!!! Use a Client Application to send a requisition with query[new] and create a new tunnel.',
     maxsockets: 10,
     marker: '==================>',
-    errorMarker: 'XXXXX ERROR XXXXX'
+    errorMarker: 'XXXXX ERROR XXXXX',
+    logMarker: '###'
 };
 
 module.exports = { parameters };

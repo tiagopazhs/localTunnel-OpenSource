@@ -6,7 +6,7 @@ async function auditLog(id, type) {
         tunnelId: id,
         type: type
     });
-    console.log(`Log: ${type} id: ${id}`)
+    console.log(`${parameters.logMarker} Log: ${type} id: ${id} ${parameters.logMarker} `)
 }
 
 module.exports = auditLog
