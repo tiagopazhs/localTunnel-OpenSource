@@ -25,11 +25,36 @@ exports.postTunnelCatalog = async (req, res) => {
 exports.getTunnelStatus = async (req, res) => {
     const tunnelId = req.params.id
     try {
-        const cataloData = await CatalogModel.findOne({ tunnelId: tunnelId })
-        if (!cataloData) return res.status(422).json({ message: 'Tunnel is not registered' })
-        res.status(200).json(cataloData)
+        const catalogData = await CatalogModel.findOne({ tunnelId: tunnelId })
+        if (!catalogData) return res.status(422).json({ message: 'Tunnel is not registered' })
+        res.status(200).json(catalogData)
     } catch (error) {
         res.status(500).json({ error: error })
     }
 }
 
+exports.putTunnelStatus = async (req, res) => {
+    const tunnelId = req.params.id
+    try {
+        const catalogData = await CatalogModel.findOne({ tunnelId: tunnelId })
+        if (!catalogData) return res.status(422).json({ message: 'Tunnel is not registered' })
+        catalogData.status = req.body.status
+        await catalogData.save()
+        res.status(200).json(catalogData)
+    } catch (error) {
+        res.status(500).json({ error: error })
+    }
+}
+
+exports.deleteTunnel = async (req, res) => {
+    const tunnelId = req.params.id
+    try {
+        const catalogData = await CatalogModel.findOne({ tunnelId: tunnelId })
+        if (!catalogData) return res.status(422).json({ message: 'Tunnel is not registered' })
+        catalogData.status = req.body.status
+        await catalogData.remove()
+        res.status(200).json({ message: 'Tunnel deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error })
+    }
+}
