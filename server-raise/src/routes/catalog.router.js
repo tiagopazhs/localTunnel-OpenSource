@@ -3,7 +3,7 @@ const CatalogController = require('../controllers/catalog.controller')
 
 router.get('/', CatalogController.getControlPanel);
 
-router.get('/tunnels-list', CatalogController.getAllTunnels);
+router.get('/list', CatalogController.getAllTunnels);
 
 router.get('/tunnel-status/:id', CatalogController.getTunnelStatus);
 
