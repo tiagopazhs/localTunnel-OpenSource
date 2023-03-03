@@ -21,7 +21,7 @@ app.use(express.json());
 
 app.use(RedirectMiddleware);
 
-app.use('/', TunnelMiddleware, TunnelRouter)
+app.use('/tunnel', TunnelMiddleware, TunnelRouter)
 app.use('/catalog', Catalog)
 app.use('/audit', Audit)
 app.use('/landing', LandingPage)
