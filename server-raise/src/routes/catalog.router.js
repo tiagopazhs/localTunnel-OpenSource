@@ -9,6 +9,6 @@ router.get('/:id', CatalogController.getTunnelStatus);
 
 router.put('/:id', CatalogController.putTunnelStatus);
 
-router.put('/:id', CatalogController.deleteTunnel);
+router.delete('/:id', CatalogController.deleteTunnel);
 
 module.exports = router
