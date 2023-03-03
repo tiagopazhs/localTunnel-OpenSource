@@ -5,20 +5,20 @@ const catalogLog = require('../utils/catalog.util')
 const Clients = new Map()
 
 async function newClient(id) {
-    const agent = new TunnelAgent({ clientId: id});
+    const agent = new TunnelAgent({ clientId: id });
     const client = new Client({ id, agent });
     Clients[id] = client;
     const { port } = await agent.listen();
     auditLog(id, "create connection")
-    // catalogLog(id, "open")
-    return { id, port};
+    catalogLog(id, "open")
+    return { id, port };
 }
 
 function removeClient(id) {
     const client = Clients[id];
     if (!client) return;
     auditLog(id, "close connection")
-    // catalogLog(id, "close")
+    catalogLog(id, "close")
     delete Clients[id];
     client.close();
 }
@@ -27,4 +27,4 @@ function getClient(id) {
     return Clients[id];
 }
 
-module.exports = { newClient, removeClient, getClient}
+module.exports = { newClient, removeClient, getClient }

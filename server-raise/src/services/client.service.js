@@ -1,5 +1,7 @@
 const EventEmitter = require('events');
 const HandleClientReq = require('../utils/handle-client-req.util');
+const auditLog = require('../utils/audit.util')
+const catalogLog = require('../utils/catalog.util')
 
 class client extends EventEmitter {
   constructor(options) {
@@ -18,8 +20,8 @@ class client extends EventEmitter {
     });
 
     agent.on('offline', () => {
-      console.log('client offline %s', id);
-
+      auditLog(id, "close connection")
+      catalogLog(id, "close")
       clearTimeout(this.graceTimeout);
 
       this.graceTimeout = setTimeout(() => {
