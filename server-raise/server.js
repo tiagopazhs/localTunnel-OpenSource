@@ -5,7 +5,7 @@ const server = http.createServer(app);
 const mongoose = require('mongoose');
 const TunnelMiddleware = require('./src/middlewares/tunnel.middleware')
 const RedirectMiddleware = require('./src/middlewares/redirect.middleware')
-const LandingPage = require('./src/routes/tunnel.router')
+const Landing = require('./src/routes/landing.router')
 const TunnelRouter = require('./src/routes/tunnel.router')
 const Catalog = require('./src/routes/catalog.router')
 const Audit = require('./src/routes/audit.router')
@@ -24,7 +24,7 @@ app.use(RedirectMiddleware);
 app.use('/tunnel', TunnelMiddleware, TunnelRouter)
 app.use('/catalog', Catalog)
 app.use('/audit', Audit)
-app.use('/landing', LandingPage)
+app.use('/landing', Landing)
 
 mongoose.connect(
     `mongodb+srv://${DB_USER}:${DB_PASSWORD}@lt.73ncy2i.mongodb.net/?retryWrites=true&w=majority`
