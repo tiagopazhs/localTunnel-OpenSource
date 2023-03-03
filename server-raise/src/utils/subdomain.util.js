@@ -20,4 +20,9 @@ function hasSubdomain(hostname) {
     else return false
 }
 
-module.exports = {getId, getRouter, hasSubdomain}
+function hasRouter(hostname) {
+    if (getRouter(hostname) !== '') return true
+    else return false
+}
+
+module.exports = {getId, getRouter, hasSubdomain, hasRouter}
