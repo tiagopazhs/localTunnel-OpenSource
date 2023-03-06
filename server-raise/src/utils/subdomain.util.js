@@ -25,4 +25,17 @@ function hasRouter(hostname) {
     else return false
 }
 
-module.exports = {getId, getRouter, hasSubdomain, hasRouter}
+function isRegistered (url) {
+
+    const routes = parameters.registeredRoutes
+
+    let registered = false
+
+    for (let i = 0; i < routes.length; i++) {
+        if (url.startsWith(routes[i])) registered = true 
+    }
+
+    return registered
+}
+
+module.exports = {getId, getRouter, hasSubdomain, hasRouter, isRegistered}
