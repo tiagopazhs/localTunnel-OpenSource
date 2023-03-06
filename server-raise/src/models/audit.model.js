@@ -13,7 +13,15 @@ const auditSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    default: false
+    default: 'no description'
+  },
+  originIp: {
+    type: String,
+    required: false,
+  },
+  tcpPort:{
+    type: String,
+    required: false
   }
 });
 

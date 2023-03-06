@@ -1,4 +1,5 @@
 const { parameters } = require('../config/config');
+const auditLog = require('../utils/audit.util')
 
 module.exports = {
   _onClose() {
@@ -42,8 +43,9 @@ module.exports = {
     }
 
     this.connectedSockets += 1;
-    console.log('new connection from: %s:%s', socket.address().address, socket.address().port);
-
+    
+    auditLog(this.options.clientId, "new connection", socket.address().address, socket.address().port)    
+    
     const fn = this.waitingCreateConn.shift();
     if (fn) {
       console.log('giving socket to queued conn request');
