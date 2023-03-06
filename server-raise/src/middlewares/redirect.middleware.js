@@ -1,5 +1,5 @@
 const { parameters } = require('../config/config')
-const { urlLog, hasSubdomain, isRegistered } = require('../utils/subdomain.util')
+const { urlLog, hasSubdomain, isRegistered } = require('../utils/handle-url.util')
 
 function redirect(req, res, next) {
 
