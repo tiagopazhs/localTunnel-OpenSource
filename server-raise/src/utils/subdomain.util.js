@@ -4,9 +4,9 @@ function splitUrl(url) {
     return url.split(parameters.host)
 }
 
-function getId(hostname) {
+function getId(hostname, dot) {
     let id = splitUrl(hostname)[0]
-    if (id.endsWith('.')) id = id.slice(0, -1) //Verify is the id ends with a dot and remove it 
+    if (id.endsWith('.') && !dot) id = id.slice(0, -1) //Verify is the id ends with a dot and remove it 
 
     return id;
 }
@@ -38,4 +38,31 @@ function isRegistered (url) {
     return registered
 }
 
-module.exports = {getId, getRouter, hasSubdomain, hasRouter, isRegistered}
+function urlLog(req) {
+    let subdomain = getId(req.headers.host, true)
+    let bodyLog = ''
+    let aux = ''
+    let id = req.body.tunnelId
+
+    let url = `http://${subdomain}host${req.url} `
+
+    if (req.url.startsWith('/audit')) {
+        bodyLog = ` [ ${req.body.type} -> ID ${id} ]`
+        return url + bodyLog
+    }
+
+    if (req.url.startsWith('/catalog')) {
+        if(req.method === 'GET') bodyLog = ` [ existence check -> ID ${req.url.split('/')[2]} ]`
+        else bodyLog = ` [ ${req.body.status} -> ID ${id} ]`
+        return url + bodyLog
+    }
+
+    if (req.url.startsWith('/landing')) {
+        bodyLog = ` [ redirect to landing page ]`
+        return url + bodyLog
+    }
+
+    return url
+}
+
+module.exports = {getId, getRouter, hasSubdomain, hasRouter, isRegistered, urlLog}

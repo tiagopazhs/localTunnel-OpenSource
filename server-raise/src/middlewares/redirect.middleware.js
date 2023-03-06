@@ -1,9 +1,9 @@
 const { parameters } = require('../config/config')
-const { hasSubdomain, isRegistered } = require('../utils/subdomain.util')
+const { urlLog, hasSubdomain, isRegistered } = require('../utils/subdomain.util')
 
 function redirect(req, res, next) {
 
-    console.log(`Received request ${parameters.marker} http://...${req.url} `)
+    console.log(`Received request ${parameters.marker} ${urlLog(req)}`)
 
     if (!hasSubdomain(req.headers.host) && req.originalUrl === '/') {
         return res.redirect('/landing')

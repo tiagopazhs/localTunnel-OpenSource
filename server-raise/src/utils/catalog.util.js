@@ -16,10 +16,8 @@ async function catalogLog(id, status) {
         }
         else {
             await axios.post(`http://${parameters.host}/catalog`, data)
-            status = status + '(new)'
         }
 
-        console.log(`${parameters.logMarker} Catalog: ${status} id: ${id} ${parameters.logMarker}`);
     } catch (error) { }
 }
 

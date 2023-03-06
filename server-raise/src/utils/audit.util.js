@@ -12,7 +12,6 @@ async function auditLog(id, type, originIp, tcpPort) {
         }
 
         await axios.post(`http://${parameters.host}/audit`, reqBody);
-        console.log(`${parameters.logMarker} Log: ${type} id: ${id} ${parameters.logMarker} `)
     } catch (err) {
         console.error(`${parameters.logMarker} Error: ${err.message} ${parameters.logMarker}`);
     }
