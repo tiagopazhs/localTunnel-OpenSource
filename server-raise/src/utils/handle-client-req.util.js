@@ -1,18 +1,16 @@
-const Http = require('http');
+const http = require('http');
 
 const handleClientReq = (req, res, agent) => {
-  const opt = {
-    path: req.url,
-    agent: agent,
-    method: req.method,
-    headers: req.headers
+  const options = {
+    ...req,
+    agent,
   };
-  const clientReq = Http.request(opt, (clientRes) => {
-    res.writeHead(clientRes.statusCode, clientRes.headers);
+
+  const clientReq = http.request(options, (clientRes) => {
     clientRes.pipe(res);
   });
 
-  clientReq.once('error', (err) => { });
+  clientReq.on('error', (err) => {});
 
   req.pipe(clientReq);
 };
