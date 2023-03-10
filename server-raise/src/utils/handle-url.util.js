@@ -41,7 +41,6 @@ function isRegistered (url) {
 function urlLog(req) {
     let subdomain = getId(req.headers.host, true)
     let bodyLog = ''
-    let aux = ''
     let id = req.body.tunnelId
 
     let url = `http://${subdomain}host${req.url} `
