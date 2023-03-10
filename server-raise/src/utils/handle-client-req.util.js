@@ -1,5 +1,4 @@
 const Http = require('http');
-const Pump = require('pump');
 
 const handleClientReq = (req, res, agent) => {
   const opt = {
@@ -10,13 +9,12 @@ const handleClientReq = (req, res, agent) => {
   };
   const clientReq = Http.request(opt, (clientRes) => {
     res.writeHead(clientRes.statusCode, clientRes.headers);
-
-    Pump(clientRes, res);
+    clientRes.pipe(res);
   });
 
   clientReq.once('error', (err) => { });
 
-  Pump(req, clientReq);
+  req.pipe(clientReq);
 };
 
 module.exports = handleClientReq;
