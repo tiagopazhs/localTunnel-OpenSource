@@ -2,8 +2,10 @@ const http = require('http');
 
 const handleClientReq = (req, res, agent) => {
   const options = {
-    ...req,
+    path: req.url,
     agent,
+    method: req.method,
+    headers: req.headers
   };
 
   const clientReq = http.request(options, (clientRes) => {
