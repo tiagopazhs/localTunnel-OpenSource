@@ -23,7 +23,7 @@ function removeClient(id) {
     client.close();
 }
 
-function getClient(id) {
+async function getClient(id) {
     return Clients[id];
 }
 

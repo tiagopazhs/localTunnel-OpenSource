@@ -44,8 +44,14 @@ class client extends EventEmitter {
     this.emit('close');
   }
 
-  handleRequest = (req, res) => {
-    HandleClientReq(req, res, this.agent);
+  async handleRequest (req, res) {
+    try {
+      await HandleClientReq(req, res, this.agent);
+    } catch (error) {
+      console.error('An error occurred while handling the client request:', error);
+      res.statusCode = 500;
+      res.end();
+    }
   };
 
 }
