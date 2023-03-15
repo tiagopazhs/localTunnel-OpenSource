@@ -2,6 +2,7 @@ const parameters = {
     port: 3007,
     address: '0.0.0.0',
     secure: false,
+    method: 'http',
     host: 'localhost:3007',
     registeredRoutes: ['/catalog', '/audit', '/landing', '/tunnel'],
     domain: undefined,
