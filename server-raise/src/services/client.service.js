@@ -1,5 +1,5 @@
 const EventEmitter = require('events');
-const HandleClientReq = require('../utils/handle-client-req.util');
+const request = require('../utils/handle-http-req.util');
 const auditLog = require('../utils/audit.util')
 const catalogLog = require('../utils/catalog.util')
 
@@ -46,7 +46,15 @@ class client extends EventEmitter {
 
   async handleRequest (req, res) {
     try {
-      await HandleClientReq(req, res, this.agent);
+      const options = {
+        path: req.url,
+        agent: this.agent,
+        method: req.method,
+        headers: req.headers
+      };
+
+      return res.end(await request(options))
+
     } catch (error) {
       console.error('An error occurred while handling the client request:', error);
       res.statusCode = 500;
