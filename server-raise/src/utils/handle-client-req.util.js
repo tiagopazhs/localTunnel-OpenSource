@@ -1,6 +1,23 @@
-const http = require('http');
+const handler = require('http');
 
-const handleClientReq = (req, res, agent) => {
+const request = (options) => {
+  return new Promise((resolve, reject) => {
+    const req = handler.request(options, res => {
+      let body = '';
+      res.on('data', (chunk) => {
+        body += chunk;
+        console.log('CHUNCK', chunk.toString());
+      });
+      res.on('end', () => {
+        resolve(body)
+      })
+    })
+    req.on('error', e => reject(e))
+    req.end()
+  })
+}
+
+const handleClientReq = async (req, res, agent) => {
   const options = {
     path: req.url,
     agent,
@@ -8,13 +25,8 @@ const handleClientReq = (req, res, agent) => {
     headers: req.headers
   };
 
-  const clientReq = http.request(options, (clientRes) => {
-    clientRes.pipe(res);
-  });
 
-  clientReq.on('error', (err) => {});
-
-  req.pipe(clientReq);
+  return res.end(await request(options))
 };
 
 module.exports = handleClientReq;
