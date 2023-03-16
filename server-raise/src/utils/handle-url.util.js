@@ -1,18 +1,14 @@
 const { parameters } = require('../config/config')
 
-function splitUrl(url) {
-    return url.split(parameters.host)
-}
-
 function getId(hostname, dot) {
-    let id = splitUrl(hostname)[0]
+    let id = hostname.split(parameters.host)[0]
     if (id.endsWith('.') && !dot) id = id.slice(0, -1) //Verify is the id ends with a dot and remove it 
 
     return id;
 }
 
 function getRouter(hostname) {
-    return splitUrl(hostname)[1]
+    return hostname.split(parameters.host)[1]
 }
 
 function hasSubdomain(hostname) {
