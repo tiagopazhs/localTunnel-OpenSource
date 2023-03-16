@@ -7,7 +7,6 @@ const request = async (options) => {
       let body = '';
       res.on('data', (chunk) => {
         body += chunk;
-        console.log('CHUNCK', chunk.toString());
       });
       res.on('end', () => {
         resolve(body)
