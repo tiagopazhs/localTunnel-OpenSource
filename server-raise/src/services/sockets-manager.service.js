@@ -2,7 +2,7 @@ const { parameters } = require('../config/config');
 const auditLog = require('../utils/audit.util')
 
 module.exports = {
-  _onClose() {
+  async _onClose() {
     this.closed = true;
     console.log('closed tcp socket %s');
     for (const conn of this.waitingCreateConn) {
@@ -12,7 +12,7 @@ module.exports = {
     this.emit('end');
   },
 
-  _onConnection(socket) {
+  async _onConnection(socket) {
     if (this.connectedSockets >= parameters.maxsockets) {
       console.log('no more sockets allowed');
       socket.destroy();
