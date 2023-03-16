@@ -1,4 +1,4 @@
-const destroy = (server, next) => {
+const destroy = async (server, next) => {
   console.log('emit destroy');
   server.close(next);
 };

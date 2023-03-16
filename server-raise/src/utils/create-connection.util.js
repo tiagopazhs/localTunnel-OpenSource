@@ -1,4 +1,4 @@
-function createConnection(agent, options) {
+async function createConnection(agent, options) {
   
   return new Promise((resolve, reject) => {
     if (agent.closed) {

@@ -1,27 +1,27 @@
 const { parameters } = require('../config/config')
 
-function getId(hostname, dot) {
+async function getId(hostname, dot) {
     let id = hostname.split(parameters.host)[0]
     if (id.endsWith('.') && !dot) id = id.slice(0, -1) //Verify is the id ends with a dot and remove it 
 
     return id;
 }
 
-function getRouter(hostname) {
+async function getRouter(hostname) {
     return hostname.split(parameters.host)[1]
 }
 
-function hasSubdomain(hostname) {
-    if (getId(hostname) !== '') return true
+async function hasSubdomain(hostname) {
+    if (await getId(hostname) !== '') return true
     else return false
 }
 
-function hasRouter(hostname) {
-    if (getRouter(hostname) !== '') return true
+async function hasRouter(hostname) {
+    if (await getRouter(hostname) !== '') return true
     else return false
 }
 
-function isRegistered (url) {
+async function isRegistered (url) {
 
     const routes = parameters.registeredRoutes
 
@@ -34,8 +34,8 @@ function isRegistered (url) {
     return registered
 }
 
-function urlLog(req) {
-    let subdomain = getId(req.headers.host, true)
+async function urlLog(req) {
+    let subdomain = await getId(req.headers.host, true)
     let bodyLog = ''
     let id = req.body.tunnelId
 
