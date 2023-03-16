@@ -14,7 +14,7 @@ async function newClient(id) {
     return { id, port };
 }
 
-function removeClient(id) {
+async function removeClient(id) {
     const client = Clients[id];
     if (!client) return;
     auditLog(id, "close connection")

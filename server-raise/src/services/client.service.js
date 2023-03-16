@@ -34,11 +34,11 @@ class client extends EventEmitter {
     });
   }
 
-  status() {
+  async status() {
     return this.agent.status();
   }
 
-  close() {
+  async close() {
     clearTimeout(this.graceTimeout);
     this.agent.destroy();
     this.emit('close');

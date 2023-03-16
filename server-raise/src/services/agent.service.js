@@ -19,8 +19,8 @@ class tunnelAgent extends Agent {
 
     this.server = Net.createServer();
 
-    this.server.on('close', SocketsManager._onClose.bind(this));
-    this.server.on('connection', SocketsManager._onConnection.bind(this));
+    this.server.on('close', await SocketsManager._onClose.bind(this));
+    this.server.on('connection', await SocketsManager._onConnection.bind(this));
     this.server.on('error', (err) => {
       if (err.code == 'ECONNRESET' || err.code == 'ETIMEDOUT') {
         return;
@@ -46,8 +46,8 @@ class tunnelAgent extends Agent {
       .catch(err => cb(err));
   }
 
-  destroy = (next) => {
-    Destroy(this.server, next);
+  destroy = async (next) => {
+    await Destroy(this.server, next);
   };
 }
 
