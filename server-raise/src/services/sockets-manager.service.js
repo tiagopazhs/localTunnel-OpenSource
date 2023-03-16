@@ -3,14 +3,16 @@ const auditLog = require('../utils/audit.util')
 
 module.exports = {
   async _onClose() {
-    this.closed = true;
-    console.log('closed tcp socket %s');
-    for (const conn of this.waitingCreateConn) {
-      conn(new Error('closed'), null);
-    }
-    this.waitingCreateConn = [];
-    this.emit('end');
-  },
+  const { removeClient } = require('./tunnel.service')
+  await removeClient(this.options.clientId)
+  this.closed = true;
+  console.log('closed tcp socket %s');
+  for (const conn of this.waitingCreateConn) {
+    conn(new Error('closed'), null);
+  }
+  this.waitingCreateConn = [];
+  this.emit('end');
+},
 
   async _onConnection(socket) {
     if (this.connectedSockets >= parameters.maxsockets) {
@@ -19,7 +21,7 @@ module.exports = {
       return false;
     }
 
-    socket.once('close', (hadError) => {
+    socket.once('close', async (hadError) => {
       console.log('closed socket (error: %s)', hadError);
       this.connectedSockets -= 1;
       const idx = this.availableSockets.indexOf(socket);
@@ -34,7 +36,7 @@ module.exports = {
       }
     });
 
-    socket.once('error', (err) => {
+    socket.once('error', async (err) => {
       socket.destroy();
     });
 
@@ -43,9 +45,9 @@ module.exports = {
     }
 
     this.connectedSockets += 1;
-    
-    auditLog(this.options.clientId, "new connection", socket.address().address, socket.address().port)    
-    
+
+    auditLog(this.options.clientId, "new connection", socket.address().address, socket.address().port)
+
     const fn = this.waitingCreateConn.shift();
     if (fn) {
       console.log('giving socket to queued conn request');

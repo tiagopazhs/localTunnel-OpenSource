@@ -20,7 +20,8 @@ async function removeClient(id) {
     auditLog(id, "close connection")
     catalogLog(id, "close")
     delete Clients[id];
-    client.close();
+    await client.close();
+    return;
 }
 
 async function getClient(id) {
