@@ -12,7 +12,7 @@ class client extends EventEmitter {
 
     this.graceTimeout = setTimeout(() => {
       this.close();
-    }, 1000).unref();
+    }, 10000).unref();
 
     agent.on('online', () => {
       console.log('client online %s', id);
@@ -26,7 +26,7 @@ class client extends EventEmitter {
 
       this.graceTimeout = setTimeout(() => {
         this.close();
-      }, 1000).unref();
+      }, 10000).unref();
     });
 
     agent.once('error', (err) => {
