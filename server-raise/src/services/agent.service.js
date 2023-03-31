@@ -29,7 +29,7 @@ class tunnelAgent extends Agent {
     });
 
     const port = await new Promise((resolve) => {
-      this.server.listen(() => {
+      this.server.listen(this.options.tcpPort, () => {
         const port = this.server.address().port;
         console.log('tcp server listening on port: ', port);
 
