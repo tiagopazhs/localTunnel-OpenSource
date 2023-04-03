@@ -135,6 +135,17 @@ module.exports = class Tunnel extends EventEmitter {
     for (let count = 0; count < info.max_conn; ++count) {
       this.tunnelCluster.open();
     }
+    
+    // set socket io variables
+    const io = require('socket.io-client');
+    const webSocket = io.connect(this.opts.host);
+    
+    // register ping listen event
+    webSocket.on('ping', () =>  {
+      console.log('Received ping from server');
+      webSocket.emit('pong');
+    });   
+
   }
 
   open(cb) {
