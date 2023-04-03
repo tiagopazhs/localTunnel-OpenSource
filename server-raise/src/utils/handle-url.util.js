@@ -42,13 +42,13 @@ async function urlLog(req) {
     let url = `http://${subdomain}host${req.url} `
 
     if (req.url.startsWith('/audit')) {
-        bodyLog = ` [ ${req.body.type} -> ID ${id} ]`
+        bodyLog = ` [ ID ${id} -> ${req.body.type} ]`
         return url + bodyLog
     }
 
     if (req.url.startsWith('/catalog')) {
         if(req.method === 'GET') bodyLog = ` [ existence check -> ID ${req.url.split('/')[2]} ]`
-        else bodyLog = ` [ ${req.body.status} -> ID ${id} ]`
+        else bodyLog = ` [ ID ${id} -> ${req.body.status} ]`
         return url + bodyLog
     }
 
