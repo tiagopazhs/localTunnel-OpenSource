@@ -143,9 +143,9 @@ module.exports = class Tunnel extends EventEmitter {
     // register ping listen event
     webSocket.on('ping', () =>  {
       console.log('Received ping from server');
-      webSocket.emit('pong');
+      webSocket.emit('pong', this.opts.subdomain );
     });   
-
+    
   }
 
   open(cb) {

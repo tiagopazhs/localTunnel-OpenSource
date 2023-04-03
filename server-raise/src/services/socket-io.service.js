@@ -10,13 +10,12 @@ module.exports = (server) => {
       socket.emit('ping');
     }, 2000);
 
-    socket.on('pong', () => {
-      console.log(`Client responded to ping`);
+    socket.on('pong', (id) => {
+      console.log(`Client ${id} responded to ping`);
     });
 
     socket.on('disconnect', () => {
       clearInterval(pingInterval);
     });
-
   });
 };
