@@ -17,5 +17,9 @@ module.exports = (server) => {
     socket.on('disconnect', () => {
       clearInterval(pingInterval);
     });
+
+    socket.on('customDisconnect', (id) => {
+      console.log(`Client ${id} disconnected`);
+    });
   });
 };

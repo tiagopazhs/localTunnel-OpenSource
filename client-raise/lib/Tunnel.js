@@ -146,6 +146,13 @@ module.exports = class Tunnel extends EventEmitter {
       webSocket.emit('pong', this.opts.subdomain );
     });   
     
+    // register close listen event
+    process.on('SIGINT', () => {
+      webSocket.emit('customDisconnect', this.opts.subdomain );
+      console.log('Closing connection to WebSocket...');
+      process.exit();
+    });
+
   }
 
   open(cb) {
