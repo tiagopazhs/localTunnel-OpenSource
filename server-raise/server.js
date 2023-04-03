@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
+const socketIO = require('./src/services/socket-io.service');
 const mongoose = require('mongoose');
 const TunnelMiddleware = require('./src/middlewares/tunnel.middleware')
 const RedirectMiddleware = require('./src/middlewares/redirect.middleware')
@@ -25,6 +26,9 @@ app.use('/tunnel', TunnelMiddleware, TunnelRouter)
 app.use('/catalog', Catalog)
 app.use('/audit', Audit)
 app.use('/landing', Landing)
+
+// Start socket.io server
+socketIO(server);
 
 mongoose.connect(
     `mongodb+srv://${DB_USER}:${DB_PASSWORD}@lt.73ncy2i.mongodb.net/?retryWrites=true&w=majority`
