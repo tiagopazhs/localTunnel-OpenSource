@@ -1,4 +1,4 @@
-const { parameters } = require('../config/config');
+const { maxsockets } = require('../config/config');
 const auditLog = require('../utils/audit.util')
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
 },
 
   async _onConnection(socket) {
-    if (this.connectedSockets >= parameters.maxsockets) {
+    if (this.connectedSockets >= maxsockets) {
       console.log('no more sockets allowed');
       socket.destroy();
       return false;
@@ -32,7 +32,7 @@ module.exports = {
       console.log('connected sockets: %s', this.connectedSockets);
       if (this.connectedSockets <= 0) {
         console.log('all sockets disconnected');
-        this.emit('offline');
+        // this.emit('offline');
       }
     });
 

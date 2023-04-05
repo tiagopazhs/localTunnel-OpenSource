@@ -1,4 +1,4 @@
-const { parameters } = require('../config/config')
+const { extractHostData } = require('../utils/handle-url.util')
 const { hri } = require('human-readable-ids');
 const { newClient } = require('../services/tunnel.service')
 
@@ -9,6 +9,6 @@ exports.getStartTunnel = async (req, res) => {
 
     const info = await newClient(reqId);
 
-    info.url = 'http://' + info.id + '.' + req.hostname + ':' + parameters.port;
+    info.url = 'http://' + info.id + '.' + req.hostname + ':' + (await extractHostData()).port;
     res.json(info);
 }

@@ -1,5 +1,5 @@
 const socketIO = require('socket.io');
-const { parameters } = require('../config/config')
+const configPingInterval = require('../config/config')["pingInterval "]
 
 module.exports = (server) => {
   const io = socketIO(server);
@@ -9,7 +9,7 @@ module.exports = (server) => {
 
     const pingInterval = setInterval(() => {
       socket.emit('ping');
-    }, parameters["pingInterval "]);
+    }, configPingInterval);
 
     socket.on('pong', (id) => {
       console.log(`Client ${id} responded to ping`);

@@ -1,8 +1,8 @@
-const { parameters } = require('../config/config')
+const { extractHostData } = require('./handle-url.util')
 
 const request = async (options) => {
-  return new Promise((resolve, reject) => {
-    const handler = require(parameters.method)
+  return new Promise( async (resolve, reject) => {
+    const handler = require((await extractHostData()).method)
     const req = handler.request(options, res => {
       let body = '';
       res.on('data', (chunk) => {

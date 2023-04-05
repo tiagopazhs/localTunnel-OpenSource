@@ -1,4 +1,4 @@
-const { parameters } = require('../config/config')
+const { completeHost, registeredRoutes} = require('../config/config')
 
 async function extractHostData() {
     const url = completeHost
@@ -17,14 +17,14 @@ async function extractHostData() {
 }
 
 async function getId(hostname, dot) {
-    let id = hostname.split(parameters.host)[0]
+    let id = hostname.split((await extractHostData()).hostPort)[0]
     if (id.endsWith('.') && !dot) id = id.slice(0, -1) //Verify is the id ends with a dot and remove it 
 
     return id;
 }
 
 async function getRouter(hostname) {
-    return hostname.split(parameters.host)[1]
+    return hostname.split((await extractHostData()).hostPort)[1]
 }
 
 async function hasSubdomain(hostname) {
@@ -39,12 +39,10 @@ async function hasRouter(hostname) {
 
 async function isRegistered (url) {
 
-    const routes = parameters.registeredRoutes
-
     let registered = false
 
-    for (let i = 0; i < routes.length; i++) {
-        if (url.startsWith(routes[i])) registered = true 
+    for (let i = 0; i < registeredRoutes.length; i++) {
+        if (url.startsWith(registeredRoutes[i])) registered = true 
     }
 
     return registered
@@ -76,4 +74,4 @@ async function urlLog(req) {
     return url
 }
 
-module.exports = {getId, getRouter, hasSubdomain, hasRouter, isRegistered, urlLog}
+module.exports = { extractHostData, getId, getRouter, hasSubdomain, hasRouter, isRegistered, urlLog}

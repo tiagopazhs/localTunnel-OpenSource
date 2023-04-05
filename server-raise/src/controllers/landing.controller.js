@@ -1,5 +1,5 @@
-const { parameters } = require('../config/config')
+const { landingPage } = require('../config/config')
 
 exports.getHome = async (req, res) => {
-    res.json({ msg: parameters.landingPage })
+    res.json({ msg: landingPage })
 }

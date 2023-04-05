@@ -1,4 +1,4 @@
-const { parameters } = require('../config/config')
+const { extractHostData } = require('./handle-url.util')
 const axios = require('axios');
 
 async function catalogLog(id, status) {
@@ -7,15 +7,15 @@ async function catalogLog(id, status) {
         let response = false
 
         try {
-            await axios.get(`http://${parameters.host}/catalog/${id}`);
+            await axios.get(`http://${(await extractHostData()).hostPort}/catalog/${id}`);
             response = true
         } catch (error) {}
 
         if (response) {
-            await axios.put(`http://${parameters.host}/catalog/${id}`, data)
+            await axios.put(`http://${(await extractHostData()).hostPort}/catalog/${id}`, data)
         }
         else {
-            await axios.post(`http://${parameters.host}/catalog`, data)
+            await axios.post(`http://${(await extractHostData()).hostPort}/catalog`, data)
         }
 
     } catch (error) { }

@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-const socketIO = require('./src/services/socket-io.service');
 const mongoose = require('mongoose');
 const TunnelMiddleware = require('./src/middlewares/tunnel.middleware')
 const RedirectMiddleware = require('./src/middlewares/redirect.middleware')
@@ -10,7 +9,8 @@ const Landing = require('./src/routes/landing.router')
 const TunnelRouter = require('./src/routes/tunnel.router')
 const Catalog = require('./src/routes/catalog.router')
 const Audit = require('./src/routes/audit.router')
-const { parameters } = require('./src/config/config')
+const socketIO = require('./src/services/socket-io.service');
+const { serverPort } = require('./src/config/config')
 
 //User env file to enter with password
 require('dotenv').config()
@@ -33,9 +33,10 @@ socketIO(server);
 mongoose.connect(
     `mongodb+srv://${DB_USER}:${DB_PASSWORD}@lt.73ncy2i.mongodb.net/?retryWrites=true&w=majority`
 ).then(() => {
-    server.listen(parameters.port, () => {
-        console.log(`Server listening on port ${parameters.port}`);
+    server.listen(serverPort, () => {
+        console.log(`Server listening on port ${serverPort}`);
     });
-}).catch((err) => console.log(err));
+  })
+  .catch((err) => console.log(err));
 
 module.exports = server;
