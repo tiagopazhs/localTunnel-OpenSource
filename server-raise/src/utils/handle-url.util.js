@@ -1,5 +1,21 @@
 const { parameters } = require('../config/config')
 
+async function extractHostData() {
+    const url = completeHost
+    const protocol = url.split(':')[0];
+    const parts = url.split('/');
+
+    const [host, port] = parts[2].split(':');
+
+    return {
+        hostPortRouter: parts.slice(2).join('/'),
+        hostPort: `${host}:${port}`,
+        host,
+        port: parseInt(port),
+        method: protocol
+    };
+}
+
 async function getId(hostname, dot) {
     let id = hostname.split(parameters.host)[0]
     if (id.endsWith('.') && !dot) id = id.slice(0, -1) //Verify is the id ends with a dot and remove it 
