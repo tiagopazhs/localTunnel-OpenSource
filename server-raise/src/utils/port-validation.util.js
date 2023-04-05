@@ -1,5 +1,6 @@
 const auditLog = require('../utils/audit.util')
 const Net = require('net');
+const { rangePort } = require('../config/config')
 
 async function isOpenPort(id, port) {
   const server = new Net.Server();
@@ -22,16 +23,21 @@ async function isOpenPort(id, port) {
 }
 
 async function checkPort(id) {
-  const ports = [40051, 40052, 40053];
-  for (let i = 0; i < ports.length; i++) {
-    await auditLog(id, `Checking port ${ports[i]}`)
-    if (await isOpenPort(id, ports[i])) {
-      await auditLog(id, `Port ${ports[i]} is available`)
-      return ports[i];
+  const { startPort, endPort } = rangePort;
+  for (let port = startPort; port <= endPort; port++) {
+    try {
+      await auditLog(id, `Checking port ${port}`)
+      if (await isOpenPort(id, port)) {
+        await auditLog(id, `Port ${port} is available`)
+        return port;
+      } else {
+        await auditLog(id, `Port ${port} is unavailable`)
+      }
+    } catch (err) {
+      await auditLog(id, err)
     }
-    await auditLog(id, `Port ${ports[i]} is unavailable`)
   }
-  await auditLog(id, `All ports are in use`)
+  await auditLog(id, `All ports in the range ${startPort} - ${endPort} are in use`)
   return null;
 }
 
