@@ -12,6 +12,16 @@ const Audit = require('./src/routes/audit.router')
 const socketIO = require('./src/services/socket-io.service');
 const { serverPort } = require('./src/config/config')
 
+//Morgan implementation at main server:
+// const morgan = require('morgan');
+// morgan.token('res-size', function (req, res) {
+//   return res.get('content-length');
+// });
+// app.use(morgan('loggg [:date[iso]] :method :url - request: :req[content-length] bytes, response: :res-size bytes', {
+//   stream: process.stdout
+// }));
+
+
 //User env file to enter with password
 require('dotenv').config()
 const DB_USER = process.env.DB_USER
